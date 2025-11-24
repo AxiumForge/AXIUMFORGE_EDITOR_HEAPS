@@ -208,3 +208,4 @@ axium_editor_hx/
 - **TODO.md = TRUTH**: Always work from TODO.md (working memory). It's not redundancy - it's focus.
   - Workflow: Project docs → TODO.md → Work → Mark done → Update CHANGELOG/docs → Clear → New tasks
   - TODO.md protects against crashes and context loss
+- In @RAG.md is indexed docs references and everytime you make a new docs search you add the search to the RAG.md with target link remote or local a like

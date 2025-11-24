@@ -3,6 +3,11 @@ package camera;
 import utest.Test;
 import utest.Assert;
 
+// Import from src/camera/ (different source path)
+import camera.CameraState;
+import camera.CameraState.Orbit;
+import camera.CameraStateTools;
+
 /**
  * Tests for CameraState - 3D orbit camera data structure
  *
@@ -19,7 +24,7 @@ class CameraStateTest extends Test {
         var yaw = 45.0;
         var pitch = -45.0;
 
-        var state = CameraState.createOrbit(target, distance, yaw, pitch);
+        var state = CameraStateTools.createOrbit(target, distance, yaw, pitch);
 
         switch(state) {
             case Orbit(t, d, y, p):
@@ -43,7 +48,7 @@ class CameraStateTest extends Test {
         var yaw = 0.0;  // Looking from +Z
         var pitch = 0.0; // Horizontal
 
-        var state = CameraState.createOrbit(target, distance, yaw, pitch);
+        var state = CameraStateTools.createOrbit(target, distance, yaw, pitch);
         var pos = CameraStateTools.computePosition(state);
 
         // At yaw=0, pitch=0: camera should be at (0, 0, distance)
@@ -61,7 +66,7 @@ class CameraStateTest extends Test {
         var yaw = 90.0;  // Rotate 90° around Y axis
         var pitch = 0.0;
 
-        var state = CameraState.createOrbit(target, distance, yaw, pitch);
+        var state = CameraStateTools.createOrbit(target, distance, yaw, pitch);
         var pos = CameraStateTools.computePosition(state);
 
         // At yaw=90°, pitch=0: camera should be at (distance, 0, 0)
@@ -79,7 +84,7 @@ class CameraStateTest extends Test {
         var yaw = 0.0;
         var pitch = -45.0;  // Look down 45°
 
-        var state = CameraState.createOrbit(target, distance, yaw, pitch);
+        var state = CameraStateTools.createOrbit(target, distance, yaw, pitch);
         var pos = CameraStateTools.computePosition(state);
 
         // Camera should be above and behind target
@@ -100,7 +105,7 @@ class CameraStateTest extends Test {
         var yaw = 0.0;
         var pitch = 0.0;
 
-        var state = CameraState.createOrbit(target, distance, yaw, pitch);
+        var state = CameraStateTools.createOrbit(target, distance, yaw, pitch);
         var pos = CameraStateTools.computePosition(state);
 
         // Camera should be 'distance' away from target
@@ -116,7 +121,7 @@ class CameraStateTest extends Test {
      * Test: Update yaw (horizontal rotation)
      */
     public function testUpdateYaw() {
-        var state = CameraState.createOrbit(
+        var state = CameraStateTools.createOrbit(
             new h3d.Vector(0, 0, 0),
             5.0,
             45.0,
@@ -139,7 +144,7 @@ class CameraStateTest extends Test {
      * Test: Update pitch (vertical angle)
      */
     public function testUpdatePitch() {
-        var state = CameraState.createOrbit(
+        var state = CameraStateTools.createOrbit(
             new h3d.Vector(0, 0, 0),
             5.0,
             45.0,
@@ -162,7 +167,7 @@ class CameraStateTest extends Test {
      * Test: Update distance (zoom)
      */
     public function testUpdateDistance() {
-        var state = CameraState.createOrbit(
+        var state = CameraStateTools.createOrbit(
             new h3d.Vector(0, 0, 0),
             5.0,
             45.0,
@@ -185,7 +190,7 @@ class CameraStateTest extends Test {
      * Test: Update target (pan)
      */
     public function testUpdateTarget() {
-        var state = CameraState.createOrbit(
+        var state = CameraStateTools.createOrbit(
             new h3d.Vector(0, 0, 0),
             5.0,
             45.0,

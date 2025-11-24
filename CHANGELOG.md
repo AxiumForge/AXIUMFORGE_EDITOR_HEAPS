@@ -78,8 +78,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Dependencies**: All Haxe libraries resolved (heaps, hlsdl)
 - **Shader Compilation**: HXSL shader compiles without errors
 
+- **VP1 Camera System** (Phase 1.1 Complete ✅ 2025-11-24)
+  - **Test Framework**: utest-based TDD infrastructure
+    - `tests/TestMain.hx` - Test runner
+    - `tests/build.hxml` - Test compilation config
+    - `tests/camera/CameraStateTest.hx` - 9 comprehensive test cases (31 assertions, 100% passing)
+  - **CameraState Data Structure** (`src/camera/CameraState.hx`)
+    - Immutable enum-based state: `Orbit(target, distance, yaw, pitch)`
+    - Spherical coordinates for 3D orbit camera
+    - Pure functional design (no side effects)
+  - **CameraStateTools Utilities** (`src/camera/CameraStateTools.hx`)
+    - `computePosition()` - Spherical to cartesian conversion
+    - State accessors: `getTarget()`, `getDistance()`, `getYaw()`, `getPitch()`
+    - State updates: `updateYaw()`, `updatePitch()`, `updateDistance()`, `updateTarget()`
+    - Interactive helpers: `addYaw()`, `addPitch()` (with clamping), `multiplyDistance()`, `panTarget()`
+    - All functions pure (return new state, no mutation)
+  - **Test Coverage**: Position computation, yaw/pitch rotation, distance zoom, target pan, state updates
+
 #### In Progress
-- Camera controller implementation (orbit, zoom, pan controls)
+- VP1 Phase 1.2: CameraController input handling (MMB drag, wheel zoom, Shift+MMB pan)
 - Runtime testing (`hl bin/viewer.hl` execution)
 
 #### Next Steps (Remaining for MVP)
