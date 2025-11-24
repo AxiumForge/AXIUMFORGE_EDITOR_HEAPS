@@ -1,0 +1,8 @@
+# AxiumViewer MVP - HashLink build configuration
+-cp src
+-main Main
+-lib heaps
+-lib hlsdl
+-hl bin/viewer.hl
+-D windowSize=1280x720
+-D windowTitle=Axium Viewer MVP

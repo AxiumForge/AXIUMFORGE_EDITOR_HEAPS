@@ -1,0 +1,33 @@
+{
+  "jda_version": "1.0",
+  "id": "jda.shape.sphere_basic",
+  "type": "sdf3d",
+  "param_schema": {
+    "radius": { "type": "float", "default": 1.0, "min": 0.25, "max": 4.0 }
+  },
+  "sdf_tree": {
+    "kind": "primitive",
+    "dim": "3D",
+    "shape": "sphere",
+    "params": {
+      "radius": 1.0
+    }
+  },
+  "materials": {
+    "mat.default": {
+      "shading_model": "pbr",
+      "base_color": [0.7, 0.8, 0.95, 1.0],
+      "roughness": 0.2,
+      "metallic": 0.0
+    }
+  },
+  "variants": {
+    "default": { "radius": 1.0 },
+    "hero": { "radius": 1.25 }
+  },
+  "attach_points": {
+    "top": { "position": [0, 1.0, 0], "orientation": [0, 0, 0] },
+    "bottom": { "position": [0, -1.0, 0], "orientation": [0, 0, 0] }
+  },
+  "depends": []
+}

@@ -1,0 +1,86 @@
+{
+  "jdw_version": "0.1.0",
+  "id": "jdw.demo.axium",
+  "meta": {
+    "title": "Axium JDW Demo",
+    "author": "Lars + AI",
+    "description": "Minimal JDW world referencing local JDA assets."
+  },
+  "units": {
+    "world_unit": "meter",
+    "reference_scales": {
+      "char_height": 1.8,
+      "small_prop": 0.3
+    }
+  },
+  "globals": {
+    "space": { "dim": "3D", "up": "y+", "forward": "z-", "right": "x+" },
+    "raymarch": { "max_steps": 96, "hit_epsilon": 0.0005, "max_distance": 50.0 },
+    "materials": {
+      "mat.ground": {
+        "shading_model": "lambert",
+        "base_color": [0.2, 0.4, 0.1, 1.0],
+        "sdf2d_overlay": "jda.sdf2d.grass_pattern",
+        "uv_mapping": { "type": "triplanar", "scale": 0.5 }
+      }
+    },
+    "assets": {
+      "jda": {
+        "jda.shape.sphere_basic": "assets/jda3d/jda.shape.sphere_basic.json",
+        "jda.shape.rounded_box": "assets/jda3d/jda.shape.rounded_box.json",
+        "jda.shape.pillar_repeat": "assets/jda3d/jda.shape.pillar_repeat.json"
+      },
+      "sdf2d": {
+        "jda.sdf2d.grass_pattern": "assets/jda2d/jda.sdf2d.grass_pattern.json"
+      }
+    }
+  },
+  "worlds": [
+    {
+      "id": "world.main",
+      "name": "Demo World",
+      "space": { "dim": "3D" },
+      "bounds": { "type": "aabb", "min": [-20, -5, -20], "max": [20, 20, 20] },
+      "layers": [
+        {
+          "id": "layer.main_3d",
+          "dim": "3D",
+          "visible": true,
+          "render_order": 0,
+          "nodes": ["node.ground", "node.hero"]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "node.ground",
+          "layer": "layer.main_3d",
+          "transform": { "position": [0, -0.2, 0], "rotation_euler": [0, 0, 0], "scale": [1, 1, 1], "space": "world" },
+          "material": "mat.ground",
+          "source": {
+            "type": "inline_sdf",
+            "sdf_tree": {
+              "kind": "primitive",
+              "dim": "3D",
+              "shape": "plane",
+              "params": { "normal": [0, 1, 0], "height": 0.0 }
+            }
+          }
+        },
+        {
+          "id": "node.hero",
+          "layer": "layer.main_3d",
+          "transform": { "position": [0, 1.0, 0], "rotation_euler": [0, 25, 0], "scale": [1, 1, 1], "space": "world" },
+          "material": "mat.default",
+          "source": {
+            "type": "jda",
+            "ref": "jda.shape.rounded_box",
+            "variant": "hero",
+            "param_overrides": {
+              "fillet": 0.22
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

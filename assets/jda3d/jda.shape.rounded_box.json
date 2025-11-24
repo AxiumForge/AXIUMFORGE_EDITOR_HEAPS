@@ -1,0 +1,51 @@
+{
+  "jda_version": "1.0",
+  "id": "jda.shape.rounded_box",
+  "type": "sdf3d",
+  "param_schema": {
+    "half_extents": { "type": "vec3", "default": [0.6, 0.6, 0.6] },
+    "fillet": { "type": "float", "default": 0.18, "min": 0.0, "max": 0.6 }
+  },
+  "sdf_tree": {
+    "kind": "op",
+    "op": "smooth_union",
+    "k": 0.18,
+    "children": [
+      {
+        "kind": "primitive",
+        "dim": "3D",
+        "shape": "box",
+        "params": {
+          "size": [1.2, 1.2, 1.2]
+        }
+      },
+      {
+        "kind": "primitive",
+        "dim": "3D",
+        "shape": "sphere",
+        "params": {
+          "radius": 1.0
+        }
+      }
+    ]
+  },
+  "materials": {
+    "mat.default": {
+      "shading_model": "lambert",
+      "base_color": [0.85, 0.72, 0.55, 1.0],
+      "roughness": 0.65,
+      "metallic": 0.0
+    }
+  },
+  "variants": {
+    "default": { "fillet": 0.18 },
+    "brick": { "fillet": 0.05 },
+    "toy": { "fillet": 0.25 }
+  },
+  "attach_points": {
+    "front": { "position": [0, 0, -0.9], "orientation": [0, 0, 0] },
+    "back": { "position": [0, 0, 0.9], "orientation": [0, 180, 0] },
+    "top": { "position": [0, 0.9, 0], "orientation": [0, 0, 0] }
+  },
+  "depends": []
+}

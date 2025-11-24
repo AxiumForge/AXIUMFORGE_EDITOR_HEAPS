@@ -1,0 +1,19 @@
+{
+  "id": "node.hero",
+  "layer": "layer.main_3d",
+  "transform": {
+    "position": [0, 1.0, 0],
+    "rotation_euler": [0, 25, 0],
+    "scale": [1, 1, 1],
+    "space": "world"
+  },
+  "material": "mat.default",
+  "source": {
+    "type": "jda",
+    "ref": "jda.shape.rounded_box",
+    "variant": "hero",
+    "param_overrides": {
+      "fillet": 0.22
+    }
+  }
+}

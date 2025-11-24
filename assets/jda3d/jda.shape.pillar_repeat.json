@@ -1,0 +1,55 @@
+{
+  "jda_version": "1.0",
+  "id": "jda.shape.pillar_repeat",
+  "type": "sdf3d",
+  "param_schema": {
+    "cell_size": { "type": "vec3", "default": [4.0, 0.0, 4.0] },
+    "radius": { "type": "float", "default": 0.35, "min": 0.05, "max": 1.0 },
+    "height": { "type": "float", "default": 2.5, "min": 0.5, "max": 6.0 }
+  },
+  "sdf_tree": {
+    "kind": "modifier",
+    "modifier": "repeat",
+    "params": {
+      "cell_size": [4.0, 0.0, 4.0]
+    },
+    "child": {
+      "kind": "op",
+      "op": "union",
+      "children": [
+        {
+          "kind": "primitive",
+          "dim": "3D",
+          "shape": "cylinder",
+          "params": {
+            "radius": 0.35,
+            "height": 2.5
+          }
+        },
+        {
+          "kind": "primitive",
+          "dim": "3D",
+          "shape": "sphere",
+          "params": {
+            "radius": 0.35
+          }
+        }
+      ]
+    }
+  },
+  "materials": {
+    "mat.default": {
+      "shading_model": "lambert",
+      "base_color": [0.45, 0.48, 0.52, 1.0],
+      "roughness": 0.9,
+      "metallic": 0.0
+    }
+  },
+  "variants": {
+    "default": { "radius": 0.35, "height": 2.5, "cell_size": [4.0, 0.0, 4.0] },
+    "dense": { "radius": 0.3, "height": 2.0, "cell_size": [3.0, 0.0, 3.0] },
+    "thin": { "radius": 0.2, "height": 3.0, "cell_size": [5.0, 0.0, 5.0] }
+  },
+  "attach_points": {},
+  "depends": []
+}

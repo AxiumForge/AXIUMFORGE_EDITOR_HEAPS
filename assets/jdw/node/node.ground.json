@@ -1,0 +1,20 @@
+{
+  "id": "node.ground",
+  "layer": "layer.main_3d",
+  "transform": {
+    "position": [0, -0.2, 0],
+    "rotation_euler": [0, 0, 0],
+    "scale": [1, 1, 1],
+    "space": "world"
+  },
+  "material": "mat.ground",
+  "source": {
+    "type": "inline_sdf",
+    "sdf_tree": {
+      "kind": "primitive",
+      "dim": "3D",
+      "shape": "plane",
+      "params": { "normal": [0, 1, 0], "height": 0.0 }
+    }
+  }
+}

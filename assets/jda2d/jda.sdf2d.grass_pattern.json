@@ -1,0 +1,31 @@
+{
+  "jda_version": "1.0",
+  "id": "jda.sdf2d.grass_pattern",
+  "type": "sdf2d",
+  "param_schema": {
+    "cell_size": { "type": "vec2", "default": [1.0, 1.0] },
+    "radius": { "type": "float", "default": 0.5, "min": 0.1, "max": 1.0 }
+  },
+  "sdf_tree": {
+    "kind": "modifier",
+    "modifier": "repeat",
+    "params": {
+      "cell_size": [1.0, 1.0]
+    },
+    "child": {
+      "kind": "primitive",
+      "dim": "2D",
+      "shape": "circle",
+      "params": {
+        "radius": 0.5
+      }
+    }
+  },
+  "materials": {},
+  "variants": {
+    "default": { "cell_size": [1.0, 1.0], "radius": 0.5 },
+    "micro": { "cell_size": [0.5, 0.5], "radius": 0.25 },
+    "wide": { "cell_size": [2.0, 2.0], "radius": 0.7 }
+  },
+  "depends": []
+}

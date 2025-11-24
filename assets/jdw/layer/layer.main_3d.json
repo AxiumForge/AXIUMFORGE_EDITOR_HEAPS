@@ -1,0 +1,10 @@
+{
+  "id": "layer.main_3d",
+  "dim": "3D",
+  "visible": true,
+  "render_order": 0,
+  "raymarch": {
+    "max_steps": 96
+  },
+  "nodes": ["node.ground", "node.hero"]
+}

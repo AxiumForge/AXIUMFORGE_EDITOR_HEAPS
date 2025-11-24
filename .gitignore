@@ -1,0 +1,12 @@
+# Build outputs
+/bin/
+*.hl
+
+# Editor/OS
+.DS_Store
+.vscode/
+.idea/
+
+# Logs & temp
+*.log
+tmp/
