@@ -1,6 +1,7 @@
 import utest.Runner;
 import utest.ui.Report;
 import camera.CameraStateTest;
+import camera.CameraControllerTest;
 
 /**
  * Test runner for AxiumForge Editor
@@ -13,6 +14,7 @@ class TestMain {
 
         // Camera tests
         runner.addCase(new CameraStateTest());
+        runner.addCase(new CameraControllerTest());
 
         // Run all tests
         Report.create(runner);

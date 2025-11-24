@@ -11,6 +11,8 @@ Formål: Emneinddelt indeks med target/intent, så AI kan slå viden op før nye
   - 2025-11-24 – Heaps h3d.Vector API (https://heaps.io/api/h3d/Vector.html) – Used for CameraState spherical coordinate math
   - 2025-11-24 – Heaps h3d.Camera API (https://heaps.io/api/h3d/Camera.html) – Pending for VP1 Phase 1.3 camera integration
   - 2025-11-24 – utest framework (https://lib.haxe.org/p/utest/) – Migrated from haxe.unit (not in Haxe 4), TDD infrastructure for VP1
+  - 2025-11-24 – Heaps h2d.Interactive (.haxelib/heaps/2,1,0/h2d/Interactive.hx) – Mouse/keyboard input handling with callbacks (onMove, onPush, onRelease, onWheel)
+  - 2025-11-24 – Heaps hxd.Event (.haxelib/heaps/2,1,0/hxd/Event.hx) – Input event types (EPush, ERelease, EMove, EWheel), properties: relX/relY, button (0=left, 1=middle, 2=right), wheelDelta
 
 ## 2) AxiumSL (DSL + IR)
 - **Target/Intent**: Spec + minimal syntaks (v0.1) og roadmap til HXSL-first shader DSL.
