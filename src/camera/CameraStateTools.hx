@@ -145,13 +145,15 @@ class CameraStateTools {
     /**
      * Add delta to pitch (for mouse drag rotation)
      *
-     * Clamps pitch to reasonable range to prevent camera flipping.
+     * Clamps pitch to safe range to prevent gimbal lock.
+     * At exactly ±90°, camera is directly above/below target and rotation breaks.
      */
-    public static function addPitch(state: CameraState, deltaPitch: Float, minPitch: Float = -85.0, maxPitch: Float = -5.0): CameraState {
+    public static function addPitch(state: CameraState, deltaPitch: Float, minPitch: Float = -85.0, maxPitch: Float = 85.0): CameraState {
         var currentPitch = getPitch(state);
         var newPitch = currentPitch + deltaPitch;
 
-        // Clamp pitch to prevent gimbal lock and weird orientations
+        // Clamp pitch to prevent gimbal lock (stay away from ±90°)
+        // This allows 170° vertical rotation which is sufficient for most use cases
         newPitch = Math.max(minPitch, Math.min(maxPitch, newPitch));
 
         return updatePitch(state, newPitch);

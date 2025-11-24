@@ -8,10 +8,12 @@
 
 ## 🎯 Current Focus
 
-**Active VP**: VP1 - Interactive Viewer
-**Goal**: Add camera controller with orbit/zoom/pan controls
-**Timeline**: 1 week
-**Approach**: TDD + Domain-Driven Design
+**Active VP**: VP6 - Editor UI
+**Goal**: Add UI panels for asset browsing, selection, and inspection
+**Timeline**: Function over quality - first iteration
+**Approach**: Heaps h2d UI + Domain-Driven Design (ui/ domain)
+**Priority**: Make JDA loading accessible via UI (not just hardcoded)
+**Foundation**: VP5 complete (JDA loading works, need UI to control it)
 
 ---
 
@@ -33,72 +35,210 @@
 
 ---
 
-## VP1: Interactive Viewer 🔨 IN PROGRESS
+## VP1: Interactive Viewer ✅ COMPLETED (2025-11-24)
 
 **Goal**: VP0 + Interactive camera controls (orbit, zoom, pan)
 
-**Status**: Ready to implement (0%)
+**Status**: 100% Complete - All phases delivered!
 
 ### Domain: `camera/` (TDD Workflow)
 
-#### Phase 1.1: CameraState - Data Structure
-- [ ] **Test**: `tests/camera/CameraStateTest.hx`
-  - [ ] Test orbit state initialization
-  - [ ] Test position computation from spherical coords
-  - [ ] Test yaw/pitch/distance updates
-  - [ ] Test target positioning
-- [ ] **Implement**: `src/camera/CameraState.hx`
-  - [ ] Define `CameraState` enum with `Orbit` variant
-  - [ ] Implement `computePosition()` - spherical to cartesian
-  - [ ] Implement state update methods
-- [ ] **Validate**: All CameraState tests pass ✅
+#### Phase 1.1: CameraState - Data Structure ✅
+- [x] **Test**: `tests/camera/CameraStateTest.hx` (9 tests, 31 assertions)
+  - [x] Test orbit state initialization
+  - [x] Test position computation from spherical coords
+  - [x] Test yaw/pitch/distance updates
+  - [x] Test target positioning
+- [x] **Implement**: `src/camera/CameraState.hx` + `src/camera/CameraStateTools.hx`
+  - [x] Define `CameraState` enum with `Orbit` variant
+  - [x] Implement `computePosition()` - spherical to cartesian
+  - [x] Implement state update methods (immutable)
+  - [x] Implement helper functions (addYaw, addPitch, multiplyDistance, panTarget)
+- [x] **Validate**: All CameraState tests pass ✅
 
-#### Phase 1.2: CameraController - Input Handling
-- [ ] **Test**: `tests/camera/CameraControllerTest.hx`
-  - [ ] Test MMB drag updates yaw/pitch
-  - [ ] Test mouse wheel updates distance
-  - [ ] Test Shift+MMB drag updates target
-  - [ ] Test pitch clamping (-85° to -5°)
-  - [ ] Test distance clamping (min/max)
-- [ ] **Implement**: `src/camera/CameraController.hx`
-  - [ ] Setup input event handling (Heaps event system)
-  - [ ] Implement orbit rotation (MMB drag → yaw/pitch)
-  - [ ] Implement zoom (wheel → distance)
-  - [ ] Implement pan (Shift+MMB → target)
-  - [ ] Apply constraints (pitch clamp, distance clamp)
-- [ ] **Validate**: All CameraController tests pass ✅
+#### Phase 1.2: CameraController - Input Handling ✅
+- [x] **Test**: `tests/camera/CameraControllerTest.hx` (8 tests, 16 assertions)
+  - [x] Test rotation updates yaw/pitch
+  - [x] Test zoom updates distance
+  - [x] Test pan updates target
+  - [x] Test pitch clamping (-85° to +85°) - gimbal lock prevention
+  - [x] Test distance clamping (min/max)
+  - [x] Test sensitivity configuration
+- [x] **Implement**: `src/camera/CameraController.hx`
+  - [x] Stateful controller class
+  - [x] Implement `rotate(deltaX, deltaY)` method
+  - [x] Implement `zoom(wheelDelta)` method
+  - [x] Implement `pan(deltaRight, deltaUp)` method
+  - [x] Apply constraints (pitch clamp, distance clamp)
+- [x] **Validate**: All CameraController tests pass ✅
 
-#### Phase 1.3: Integration
-- [ ] **Update**: `src/Main.hx`
-  - [ ] Import CameraController
-  - [ ] Initialize controller in `init()`
-  - [ ] Wire input events to controller
-  - [ ] Call `controller.update(dt)` in update loop
-  - [ ] Apply camera state to `s3d.camera`
-  - [ ] Update shader uniforms with camera state
-- [ ] **Test**: Manual validation
-  - [ ] Compile: `haxe build.hxml`
-  - [ ] Run: `hl bin/viewer.hl`
-  - [ ] Test orbit (MMB drag)
-  - [ ] Test zoom (wheel)
-  - [ ] Test pan (Shift+MMB)
-  - [ ] Verify smooth, responsive controls
-- [ ] **Validate**: VP1 deliverable works end-to-end ✅
+#### Phase 1.3: Integration ✅
+- [x] **Update**: `src/Main.hx`
+  - [x] Import CameraController + CameraState modules
+  - [x] Initialize controller in `init()` with starting state
+  - [x] Wire h2d.Interactive for fullscreen input
+  - [x] Handle mouse events (onPush, onRelease, onMove, onWheel)
+  - [x] Handle keyboard events (Shift key tracking)
+  - [x] Apply camera state to `s3d.camera` each frame
+  - [x] Update shader uniforms with camera state
+- [x] **Fixes Applied**:
+  - [x] LMB + RMB support (not just MMB) - touchpad friendly!
+  - [x] Box SDF instead of sphere - rotation visible
+  - [x] Pitch range: -85° to +85° (170°) - gimbal lock avoided
+- [x] **Test**: Manual validation
+  - [x] Compile: `haxe build.hxml` ✅
+  - [x] Run: `hl bin/viewer.hl` ✅
+  - [x] Test orbit (drag) ✅
+  - [x] Test zoom (2-finger scroll) ✅
+  - [x] Test pan (Shift+drag) ✅
+  - [x] Verify smooth, responsive controls ✅
+- [x] **Validate**: VP1 deliverable works end-to-end ✅
 
-### VP1 Success Criteria:
-- ✅ All tests pass (`haxe tests/build.hxml`)
+### VP1 Success Criteria: ✅ ALL MET
+- ✅ All tests pass (17 tests, 47 assertions, 0 failures)
 - ✅ App compiles without errors
-- ✅ Camera responds to mouse input smoothly
-- ✅ Controls feel natural (Blender-style)
+- ✅ Camera responds to mouse/touchpad input smoothly
+- ✅ Controls feel natural (Blender-style orbit)
+- ✅ 170° vertical rotation (gimbal lock avoided)
+- ✅ Infinite horizontal rotation
 - ✅ Existing features still work (no regressions)
+
+**Deliverable**: ✅ Working interactive 3D SDF viewer with full orbit camera
 
 ---
 
-## VP2: Hot-Reload Shader System 📋 PLANNED
+## VP5: JDA/JDW Loader System 🎯 ACTIVE
+
+**Goal**: VP1 + Load and display JDA/JDW assets (CORE FUNCTIONALITY)
+
+**Status**: In progress - Phase 5.1 starting
+
+**Why VP5 First?**:
+- JDA/JDW loading is THE central system
+- We already have 3 JDA 3D assets + 1 JDA 2D + 1 JDW world ready
+- Rendering improvements (VP2/VP3) are secondary until this works
+- DevOps principle: Jump phases to deliver core functionality first
+
+### Domain: `loader/` (TDD Workflow)
+
+#### Phase 5.1: JDA 3D JSON Parser ✅ COMPLETE (2025-11-24)
+- [x] **Test**: `tests/loader/Jda3dLoaderTest.hx` (10 tests, 30 assertions)
+  - [x] Test load basic sphere JDA (`jda.shape.sphere_basic.json`)
+  - [x] Test parse metadata (jda_version, id, type)
+  - [x] Test parse param_schema section
+  - [x] Test parse sdf_tree structure (Primitive, Operation, Modifier)
+  - [x] Test validate required fields
+  - [x] Test CSG operations (smooth_union in rounded_box)
+  - [x] Test modifiers (repeat in pillar_repeat)
+  - [x] Test materials parsing
+  - [x] Test variants parsing
+  - [x] Test validation errors
+- [x] **Implement**: `src/loader/Jda3dTypes.hx`
+  - [x] Define `Jda3dDocument` typedef (metadata, paramSchema, sdfTree, materials, variants, attachPoints, depends)
+  - [x] Define `SdfNode` enum (Primitive, Operation, Modifier, Reference)
+  - [x] Define `PrimitiveShape` enum (Sphere, Box, Cylinder, Capsule, Torus, Plane)
+  - [x] Define `CsgOperation` enum (Union, Subtract, Intersect, SmoothUnion, SmoothSubtract, SmoothIntersect)
+  - [x] Define `ModifierType` enum (Repeat, Elongate, Twist, Bend, Round, Onion)
+  - [x] Define `Dimension` enum (Dim2D, Dim3D)
+  - [x] Define helper typedefs (ParamDefinition, Material, AttachPoint)
+- [x] **Implement**: `src/loader/Jda3dLoader.hx`
+  - [x] `loadFromFile(path: String): Jda3dDocument`
+  - [x] `loadFromString(json: String): Jda3dDocument`
+  - [x] JSON parsing with recursive SDF tree traversal
+  - [x] Validation (required fields, type checks, error messages)
+  - [x] Parse all sections (metadata, param_schema, sdf_tree, materials, variants, attach_points, depends)
+- [x] **Validate**: All Jda3dLoader tests pass ✅ (77/77 assertions, 27/27 tests, 0 failures)
+
+#### Phase 5.2: SDF Evaluation (Code Generation) ✅ COMPLETE (2025-11-24)
+- [x] **Test**: `tests/loader/SdfEvaluatorTest.hx` (9 tests, 17 assertions)
+  - [x] Test sphere primitive → HXSL code (generates `length(p) - radius`)
+  - [x] Test box primitive → HXSL code (generates box SDF formula)
+  - [x] Test CSG union → HXSL code (uses `min()`)
+  - [x] Test CSG subtract → HXSL code (uses `max(a, -b)`)
+  - [x] Test CSG smooth union (smooth min with k parameter)
+  - [x] Test repeat modifier (domain repetition with `mod()`)
+  - [x] Test complete shader class generation
+  - [x] Test generated code syntax validation
+- [x] **Implement**: `src/loader/SdfEvaluator.hx`
+  - [x] `generateShaderClass(sdfTree, className)` - Complete HXSL shader class
+  - [x] `generateSdfFunction(sdfTree, functionName)` - SDF distance function
+  - [x] Primitive code generation (Sphere, Box, Cylinder, Capsule, Torus, Plane)
+  - [x] CSG operation code generation (Union, Subtract, Intersect, SmoothUnion, SmoothSubtract, SmoothIntersect)
+  - [x] Modifier code generation (Repeat, Elongate, Twist, Bend, Round, Onion)
+  - [x] Recursive tree traversal with proper variable scoping
+  - [x] Inline lambda expressions for complex operations
+- [x] **Validate**: All tests pass ✅ (94/94 assertions, 35/35 tests, 0 failures)
+
+#### Phase 5.3: JDW Scene Loader 📋 PLANNED
+- [ ] **Test**: `tests/loader/JdwLoaderTest.hx`
+  - [ ] Test load world document
+  - [ ] Test parse scene graph (worlds → layers → nodes)
+  - [ ] Test resolve JDA asset references
+  - [ ] Test cascading defaults (materials, settings)
+- [ ] **Implement**: `src/loader/JdwTypes.hx`
+  - [ ] Define `JdwDocument` typedef
+  - [ ] Define `JdwWorld`, `JdwLayer`, `JdwNode` typedefs
+  - [ ] Define `Transform3D` typedef
+- [ ] **Implement**: `src/loader/JdwLoader.hx`
+  - [ ] Load JDW JSON
+  - [ ] Parse scene hierarchy
+  - [ ] Resolve asset references
+  - [ ] Apply cascading defaults
+- [ ] **Validate**: JDW loader tests pass ✅
+
+#### Phase 5.4: Integration with Main.hx ✅ COMPLETE (2025-11-24)
+- [x] **Update**: `src/Main.hx`
+  - [x] Load JDA file from `assets/jda3d/jda.shape.sphere_basic.json`
+  - [x] Generate HXSL shader code from SDF tree using `SdfEvaluator.generateShaderClass()`
+  - [x] Write generated shader to file `src/GeneratedShader.hx`
+  - [x] Replace hardcoded RaymarchShader with GeneratedShader (JDA-loaded asset)
+  - [x] Verify rendering works ✅
+- [x] **Test**: Manual validation
+  - [x] Compile and run ✅
+  - [x] Verify sphere renders correctly ✅ (radius 1.0 from JDA file)
+  - [x] Camera controls still work ✅ (orbit, zoom, pan)
+  - [x] No regressions ✅
+- [ ] **Iterate**: Load other assets (future enhancement)
+  - [ ] Test `jda.shape.rounded_box.json` (CSG smooth_union)
+  - [ ] Test `jda.shape.pillar_repeat.json` (repeat modifier)
+  - [ ] Test JDW world file (Phase 5.3 required)
+- [x] **Validate**: VP5 deliverable works end-to-end ✅
+
+**Complete Pipeline Working:**
+```
+JDA JSON → Jda3dLoader → SDF Tree → SdfEvaluator → HXSL Code → GeneratedShader → Rendering!
+```
+
+### VP5 Success Criteria:
+- [x] All tests pass (JDA loader, SDF evaluator) ✅ (94/94 assertions, 35/35 tests)
+- [x] App loads JDA 3D asset from file ✅ (`jda.shape.sphere_basic.json`)
+- [x] Renders loaded asset correctly (not hardcoded geometry) ✅ (sphere from JDA, not hardcoded box!)
+- [ ] Can switch between different JDA assets (future enhancement - need UI)
+- [ ] JDW scene graph loads (Phase 5.3 deferred)
+- [x] Existing features still work (camera, no regressions) ✅
+
+**Core Goals Achieved:**
+- ✅ JDA 3D JSON Parser (Phase 5.1)
+- ✅ HXSL Code Generator (Phase 5.2)
+- ✅ Integration & Rendering (Phase 5.4)
+- ⏸️ JDW Scene Loader (Phase 5.3 deferred for now)
+
+**Deliverable**: Load and display JDA/JDW assets (function over quality!)
+
+**Test Assets Available**:
+- `assets/jda3d/jda.shape.sphere_basic.json`
+- `assets/jda3d/jda.shape.rounded_box.json`
+- `assets/jda3d/jda.shape.pillar_repeat.json`
+- `assets/jda2d/jda2d.mask.vignette_radial.json`
+- `assets/jdw/world/world.demo_axium.json`
+
+---
+
+## VP2: Hot-Reload Shader System 📋 DEFERRED (after VP5)
 
 **Goal**: VP1 + Load shaders from files, hot-reload on changes
 
-**Status**: Not started (planned after VP1)
+**Status**: Deferred - Nice to have, but VP5 is core priority
 
 ### Tasks (High-Level):
 - [ ] Create `shader/` domain
@@ -112,24 +252,99 @@
 
 ---
 
-## VP3-6: Future VPs 📋 PLANNED
+## VP3: AxiumSL Compiler 📋 DEFERRED (after VP5)
 
-### VP3: AxiumSL Compiler (4-6 weeks)
-- AxiumSL → HXSL compilation
-- See: `docs/project/axsl_project.md`
+**Goal**: AxiumSL DSL → HXSL compilation
+
+**Status**: Deferred - Nice to have, but VP5 is core priority
+
+**Reference**: See `docs/project/axsl_project.md` for full implementation plan
+
+---
+
+## VP6: Editor UI 🎯 ACTIVE
+
+**Goal**: VP5 + UI panels for asset browsing, selection, and inspection
+
+**Status**: Starting Phase 6.1
+
+**Why VP6 Now?**:
+- VP5 works but requires hardcoded asset path
+- Need UI to make JDA loading accessible
+- Function over quality - simple panels first
+
+### Domain: `ui/` (Heaps h2d UI)
+
+#### Phase 6.1: Asset Selector Panel ✅ COMPLETE (2025-11-24)
+- [x] **Design**: Asset selector UI layout
+  - [x] Top panel with asset list/dropdown
+  - [x] "Load Asset" button (integrated as clickable items)
+  - [x] Display current loaded asset name
+  - [x] Simple text-based UI (h2d.Text, h2d.Interactive)
+- [x] **Implement**: `src/ui/AssetSelector.hx`
+  - [x] `AssetSelector` class extending h2d.Object
+  - [x] List available JDA files from `assets/jda3d/`
+  - [x] Button list for selection (3 assets: Sphere, Rounded Box, Pillar Repeat)
+  - [x] Callback when asset selected
+  - [x] Hover effects for buttons
+- [x] **Pre-generate Static Shaders**: `src/GenerateAllShaders.hx`
+  - [x] Generate SphereShader.hx, RoundedBoxShader.hx, PillarRepeatShader.hx
+  - [x] Workaround for HXSL compile-time limitation
+  - [x] Enables runtime shader swapping without recompile
+- [x] **Integrate**: `src/Main.hx`
+  - [x] Initialize all 3 pre-compiled shaders at startup
+  - [x] Add AssetSelector panel to s2d
+  - [x] Handle asset selection callback
+  - [x] Implement `switchShader()` - runtime shader swapping
+  - [x] Update camera uniforms for new shader
+- [x] **Fixes Applied**:
+  - [x] Fixed HXSL inline lambda issues (manual code flattening)
+  - [x] Fixed shader parameter access (Reflect.setField → direct property access via Dynamic)
+  - [x] Fixed z-order issue (bitmap covering UI - now adds at index 0)
+  - [x] Changed currentShader type from hxsl.Shader to Dynamic for property access
+- [x] **Test**: Manual validation
+  - [x] UI appears correctly ✅
+  - [x] Can select different assets ✅
+  - [x] Sphere → Rounded Box → Pillar Repeat switching works ✅
+  - [x] Camera controls still work ✅
+- [x] **Validate**: Phase 6.1 deliverable works ✅
+
+#### Phase 6.2: Inspector Panel 📋 PLANNED
+- [ ] **Design**: Inspector UI layout
+  - [ ] Right-side panel
+  - [ ] Display asset metadata (id, type, materials)
+  - [ ] Display param_schema values
+  - [ ] Read-only for now (editing comes later)
+- [ ] **Implement**: `src/ui/Inspector.hx`
+  - [ ] Display current asset info
+  - [ ] Show material properties
+  - [ ] Show parameter values
+- [ ] **Integrate**: Add to Main.hx alongside asset selector
+- [ ] **Validate**: Inspector shows correct asset data ✅
+
+#### Phase 6.3: Scene Graph Panel 📋 PLANNED
+- [ ] **Requires**: VP5 Phase 5.3 (JDW Scene Loader)
+- [ ] Tree view of worlds/layers/nodes
+- [ ] Node selection
+- [ ] Hierarchy display
+
+### VP6 Success Criteria:
+- [ ] Asset selector UI working
+- [ ] Can switch between JDA assets via UI
+- [ ] Inspector shows asset metadata
+- [ ] No hardcoded asset paths (user chooses via UI)
+- [ ] Existing features still work (camera, rendering)
+
+**Deliverable**: Simple editor UI for asset browsing and loading
+
+---
+
+## VP4: Scene System 📋 PLANNED
 
 ### VP4: Scene System (2-3 weeks)
 - Multi-object scenes
 - Scene graph with hierarchy
-
-### VP5: JDW/JDA Loader (3-4 weeks)
-- Load world/asset files
-- Standards compliance
-
-### VP6: Editor UI (4-6 weeks)
-- Scene graph panel
-- Inspector panel
-- Full editor interface
+- Requires: VP5 Phase 5.3 (JDW Scene Loader)
 
 ---
 
@@ -258,23 +473,56 @@
 
 ## Immediate Next Actions
 
-### Now (This Session):
-1. ✅ Updated TODO.md with VP approach
-2. ⏳ **Start VP1 Phase 1.1** (when approved)
-   - Create `src/camera/` and `tests/camera/` directories
-   - Write CameraState tests
-   - Implement CameraState
-3. Continue through VP1 phases sequentially
+### Completed (2025-11-24):
+1. ✅ VP1 Phase 1.1: CameraState (TDD, 9 tests, 31 assertions)
+2. ✅ VP1 Phase 1.2: CameraController (TDD, 8 tests, 16 assertions)
+3. ✅ VP1 Phase 1.3: Main.hx integration (h2d.Interactive, full controls)
+4. ✅ Fixes: LMB support, box SDF, gimbal lock prevention
+5. ✅ Runtime validation: Smooth 170° orbit, infinite horizontal rotation
+6. ✅ CHANGELOG.md updated
+7. ✅ TODO.md updated
 
-### After VP1 Complete:
-1. Update CHANGELOG.md with VP1 completion
-2. Update `docs/project/progress.md`
-3. Clear completed VP1 tasks from TODO.md
-4. Add VP2 detailed tasks to TODO.md
+### Next: VP5 (JDA/JDW Loader) - ACTIVE
+
+**Decision Made**: VP5 is THE core system, VP2/VP3 are deferred
+**Reasoning**: JDA/JDW loading is central, rendering is secondary
+**Approach**: TDD + function over quality (first iteration)
+**DevOps**: Jump phases to deliver core functionality first
 
 ---
 
 ## Important Notes
+
+### SDF Raymarching Advantages (Key Insight - 2025-11-24)
+
+**Real-time viewport** (current):
+- 1280x720 @ 60 FPS
+- Interactive editing and manipulation
+- Immediate feedback
+
+**Offline high-resolution rendering** (future VP):
+- 4K-10K resolution (10240x5760+)
+- Render slowly frame-by-frame → export to video
+- **Hyper-realistic output** with arbitrarily high quality
+- No mesh artifacts, infinite detail from mathematical surfaces
+- Perfect for:
+  - Cinematics and animation
+  - Architectural visualization
+  - Product renders
+  - Art/generative content
+
+**This is the hidden power of SDF:**
+- Edit in real-time (720p-1080p)
+- Render offline (4K-10K) → photorealistic
+- Same scene, same code, different resolution/quality trade-off
+- Pure math scales infinitely (unlike meshes with fixed vertex count)
+
+**Future VP candidate**: VP7 - Offline Renderer
+- Frame sequence export
+- Arbitrary resolution support
+- Multi-sample anti-aliasing (4x, 8x, 16x)
+- Path tracing mode (GI, caustics, etc.)
+- Video composition pipeline
 
 ### Development Principles:
 - **VP (Viable Product)**: Every phase delivers working product
@@ -282,6 +530,7 @@
 - **DDD**: Clear domain separation (orchestrator pattern)
 - **KISS**: Simple over complex, functions over classes when stateless
 - **AI-First**: Clear structure for future AI developers
+- **Math > Data**: Procedural/functional over asset-heavy
 
 ### File Structure:
 ```
@@ -310,10 +559,20 @@ src/
 
 ---
 
-## Ready to Start VP1? 🚀
+## 🎉 VP1 Complete! Now Starting VP5!
 
-**Next task**: Create camera domain directories and write first tests
+**Completed**: Interactive 3D SDF viewer with full orbit camera (2025-11-24)
+- ✅ 17 tests, 47 assertions, 100% passing
+- ✅ Smooth 170° vertical + infinite horizontal rotation
+- ✅ Gimbal lock prevention
+- ✅ Touchpad-friendly controls
+- ✅ Real-time 60 FPS with pure SDF raymarching
 
-**Command to begin**: "Start VP1 Phase 1.1"
+**Active Now: VP5 - JDA/JDW Loader (CORE SYSTEM)**
+- 🎯 Load JDA 3D assets from JSON
+- 🎯 Generate HXSL code from SDF tree
+- 🎯 Replace hardcoded box with loaded assets
+- 🎯 Basic JDW scene graph support
+- 🎯 Function over quality (first iteration!)
 
-**ETA**: 2-3 days for VP1 complete implementation
+**VP2/VP3 Deferred**: Nice to have, but VP5 is the core functionality

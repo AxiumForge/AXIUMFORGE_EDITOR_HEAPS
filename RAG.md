@@ -24,7 +24,11 @@ Formål: Emneinddelt indeks med target/intent, så AI kan slå viden op før nye
 - **Target/Intent**: JSON standard for 2D/3D SDF/CSG worlds med cascading defaults og JDA assets.
 - **Lokale**: `docs/jdw_sdf_csg_world_standard_v_0.md`
 - **Eksterne**: _(tilføj relevante artikler/blogs om SDF/CSG world formats)_
-- **Søgninger/Findings**: _(tilføj: dato – link/noter)_
+- **Søgninger/Findings**:
+  - 2025-11-24 – VP5 Phase 5.1 Complete – JDA 3D JSON parser implementation (77/77 tests passing)
+  - 2025-11-24 – JDA structure: jda_version, id, type, param_schema, sdf_tree (recursive: primitive/op/modifier/reference), materials, variants, attach_points, depends
+  - 2025-11-24 – Enum-based SDF tree: SdfNode (Primitive, Operation, Modifier, Reference) prevents invalid structures
+  - 2025-11-24 – Test assets working: sphere_basic, rounded_box (CSG smooth_union), pillar_repeat (modifier repeat)
 
 ## 4) Projekt/Proces
 - **Target/Intent**: VP/TDD-planer, milepæle, progress board.
@@ -32,12 +36,27 @@ Formål: Emneinddelt indeks med target/intent, så AI kan slå viden op før nye
 - **Eksterne**: _(tilføj evt. proces-/DDD-kilder)_
 - **Søgninger/Findings**:
   - 2025-11-24 – VP1 Phase 1.1 Complete – CameraState TDD implementation (31/31 tests passing), immutable state pattern with enum + tools class
+  - 2025-11-24 – VP1 Phase 1.2 Complete – CameraController (rotate/zoom/pan methods), 8 tests, 47 total assertions passing
+  - 2025-11-24 – VP1 Phase 1.3 Complete – Main.hx integration with h2d.Interactive input, MMB/wheel/Shift controls, runtime verified
+  - 2025-11-24 – 🎉 VP1 COMPLETE – Interactive 3D SDF viewer with Blender-style orbit camera, TDD workflow, immutable architecture
+  - 2025-11-24 – **Priority Shift**: VP2/VP3 deferred, VP5 (JDA/JDW Loader) is CORE system (DevOps: jump phases, function over quality)
+  - 2025-11-24 – 🎉 VP5 Phase 5.1 COMPLETE – JDA 3D JSON Parser (10 tests, 30 assertions, 100% passing), recursive SDF tree parsing, type-safe enum design
+  - 2025-11-24 – 🎉 VP5 Phase 5.2 COMPLETE – SDF Evaluator/HXSL Code Generator (9 tests, 17 assertions), primitives/CSG/modifiers all working
+  - 2025-11-24 – 🎉 VP5 Phase 5.4 COMPLETE – Integration with Main.hx, complete pipeline working: JDA JSON → Parser → SDF Tree → Code Gen → Rendering!
+  - 2025-11-24 – **VP5 CORE COMPLETE** – 94/94 tests passing, JDA assets loading and rendering dynamically, sphere from JDA file replacing hardcoded box
+  - 2025-11-24 – 🎉 VP6 Phase 6.1 COMPLETE – Asset Selector UI with runtime shader switching (3 pre-compiled shaders), no recompile needed for asset changes
+  - 2025-11-24 – **CLI Shader Compiler System** – tools/Jda2Hxsl.hx (single/batch mode), compile-shaders.sh script, statement-based code generation (no inline lambdas)
+  - 2025-11-24 – **Code Generation Strategy** – Unique variable naming (box_q0, smu_a0, rep_p0), statements array for complex operations, flat HXSL output
 
 ## 5) HXSL/Heaps Noter
 - **Target/Intent**: Pipeline-noter, reference-links for HXSL/Heaps brugt af projekterne.
 - **Lokale**: `docs/hxsl.md`
 - **Eksterne**: Heaps.io, Heaps GitHub HXSL map: https://github.com/HeapsIO/heaps/tree/master/hxsl
-- **Søgninger/Findings**: _(tilføj: dato – link/noter)_
+- **Søgninger/Findings**:
+  - 2025-11-24 – HXSL inline lambdas NOT supported – `(function() {...})()` syntax causes "Unsupported expression" error, must use statement-based generation
+  - 2025-11-24 – HXSL @param fields require type-specific casting – Cannot access via Dynamic or Reflect.setField, must cast to specific shader class
+  - 2025-11-24 – Heaps h2d UI z-order – Children rendered in add order, use `addChildAt(child, 0)` to add at bottom of display list
+  - 2025-11-24 – Camera orientation fix – cameraUp = (0, -1, 0) needed for correct Y-up coordinate system in HXSL raymarching shaders
 
 ## Brugsmønster
 - Start med relevant kategori (target) før ny søgning.

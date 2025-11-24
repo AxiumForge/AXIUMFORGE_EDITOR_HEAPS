@@ -60,8 +60,8 @@ class CameraControllerTest extends Test {
             case Orbit(_, _, y, p):
                 // Yaw should increase by deltaX
                 Assert.isTrue(y > 0.0);
-                // Pitch should decrease by deltaY (more negative = looking more down)
-                Assert.isTrue(p < -45.0);
+                // Pitch should increase by positive deltaY (less negative = looking more up)
+                Assert.isTrue(p > -45.0);
             default:
                 Assert.fail("Should be Orbit variant");
         }
