@@ -1,0 +1,8 @@
+# Test build configuration for AxiumForge Editor
+-cp ../src
+-cp .
+-main TestMain
+-lib heaps
+-lib utest
+-hl bin/tests.hl
+-D test
