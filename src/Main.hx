@@ -41,7 +41,6 @@ class Main extends hxd.App {
 
         // Start with sphere
         currentShader = sphereShader;
-        trace("Initialized with SphereShader");
 
         // Create fullscreen bitmap with current shader
         bitmap = new h2d.Bitmap(h2d.Tile.fromColor(0x000000, engine.width, engine.height));
@@ -141,8 +140,6 @@ class Main extends hxd.App {
      * Switch shader at runtime (no recompile needed!)
      */
     function switchShader(assetName:String) {
-        trace('Switching to: $assetName');
-
         // Remove old shader
         bitmap.remove();
 
@@ -174,8 +171,6 @@ class Main extends hxd.App {
         // Update inspector with new asset data
         currentAssetPath = assetPath;
         updateInspector(currentAssetPath);
-
-        trace('✓ Switched to $assetName - NO RECOMPILE NEEDED!');
     }
 
     /**

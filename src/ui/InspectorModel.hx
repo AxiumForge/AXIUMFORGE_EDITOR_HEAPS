@@ -13,7 +13,7 @@ import loader.Jda3dTypes.Material;
 typedef ParamInfo = {
     name: String,
     type: String,
-    defaultValue: Float,
+    defaultValue: String,  // Display as string (can be float or vec3)
     hasMin: Bool,
     min: Float,
     hasMax: Bool,
@@ -39,7 +39,7 @@ typedef MaterialInfo = {
 // Variant information for display
 typedef VariantParamInfo = {
     name: String,
-    value: Float
+    value: String  // Display as string (can be float or vec3)
 }
 
 typedef VariantInfo = {
@@ -97,10 +97,19 @@ class InspectorModel {
         for (paramName in doc.paramSchema.keys()) {
             var paramDef = doc.paramSchema.get(paramName);
 
+            // Format default value for display (can be Float or Array<Float>)
+            var defaultStr:String = "";
+            if (Std.isOfType(paramDef.defaultValue, Array)) {
+                var arr:Array<Dynamic> = cast paramDef.defaultValue;
+                defaultStr = "[" + arr.join(", ") + "]";
+            } else {
+                defaultStr = Std.string(paramDef.defaultValue);
+            }
+
             params.push({
                 name: paramName,
                 type: paramDef.type,
-                defaultValue: paramDef.defaultValue,
+                defaultValue: defaultStr,
                 hasMin: paramDef.min != null,
                 min: paramDef.min != null ? paramDef.min : 0.0,
                 hasMax: paramDef.max != null,
@@ -125,11 +134,11 @@ class InspectorModel {
             var material = doc.materials.get(materialName);
 
             // Convert base color array to ColorInfo
-            // Explicit cast needed for HashLink array access
+            // Safe array access for HashLink
             var baseColor: ColorInfo = {
-                r: (material.baseColor[0] : Float),
-                g: (material.baseColor[1] : Float),
-                b: (material.baseColor[2] : Float)
+                r: material.baseColor.length > 0 ? material.baseColor[0] : 0.0,
+                g: material.baseColor.length > 1 ? material.baseColor[1] : 0.0,
+                b: material.baseColor.length > 2 ? material.baseColor[2] : 0.0
             };
 
             materials.push({
@@ -161,11 +170,20 @@ class InspectorModel {
 
             if (variantParams != null) {
                 for (paramName in variantParams.keys()) {
-                    var paramValue: Float = variantParams.get(paramName);
+                    var paramValue: Dynamic = variantParams.get(paramName);
+
+                    // Format value for display (can be Float or Array<Float>)
+                    var valueStr:String = "";
+                    if (Std.isOfType(paramValue, Array)) {
+                        var arr:Array<Dynamic> = cast paramValue;
+                        valueStr = "[" + arr.join(", ") + "]";
+                    } else {
+                        valueStr = Std.string(paramValue);
+                    }
 
                     paramInfos.push({
                         name: paramName,
-                        value: paramValue
+                        value: valueStr
                     });
                 }
             }
@@ -195,9 +213,9 @@ class InspectorModel {
             attachPoints.push({
                 name: pointName,
                 position: {
-                    x: (point.position[0] : Float),
-                    y: (point.position[1] : Float),
-                    z: (point.position[2] : Float)
+                    x: point.position.length > 0 ? point.position[0] : 0.0,
+                    y: point.position.length > 1 ? point.position[1] : 0.0,
+                    z: point.position.length > 2 ? point.position[2] : 0.0
                 }
             });
         }

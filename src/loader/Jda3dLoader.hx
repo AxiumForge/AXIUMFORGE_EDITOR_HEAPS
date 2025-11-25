@@ -271,11 +271,22 @@ class Jda3dLoader {
 
         for (field in Reflect.fields(json)) {
             var matJson:Dynamic = Reflect.field(json, field);
+
+            // Parse base_color array explicitly for HashLink compatibility
+            var baseColorArray:Array<Float> = [];
+            if (matJson.base_color != null) {
+                var baseColorJson:Array<Dynamic> = cast matJson.base_color;
+                for (i in 0...baseColorJson.length) {
+                    var val:Float = (baseColorJson[i] : Float);
+                    baseColorArray.push(val);
+                }
+            }
+
             materials.set(field, {
-                shadingModel: matJson.shading_model,
-                baseColor: cast matJson.base_color,
-                roughness: matJson.roughness,
-                metallic: matJson.metallic
+                shadingModel: (matJson.shading_model : String),
+                baseColor: baseColorArray,
+                roughness: (matJson.roughness : Float),
+                metallic: (matJson.metallic : Float)
             });
         }
 
@@ -318,9 +329,29 @@ class Jda3dLoader {
 
         for (field in Reflect.fields(json)) {
             var pointJson:Dynamic = Reflect.field(json, field);
+
+            // Parse position array explicitly for HashLink compatibility
+            var posArray:Array<Float> = [];
+            if (pointJson.position != null) {
+                var posJson:Array<Dynamic> = cast pointJson.position;
+                for (val in posJson) {
+                    posArray.push(cast(val, Float));
+                }
+            }
+
+            // Parse orientation array explicitly (if present)
+            var orientArray:Null<Array<Float>> = null;
+            if (pointJson.orientation != null) {
+                orientArray = [];
+                var orientJson:Array<Dynamic> = cast pointJson.orientation;
+                for (val in orientJson) {
+                    orientArray.push(cast(val, Float));
+                }
+            }
+
             points.set(field, {
-                position: cast pointJson.position,
-                orientation: cast pointJson.orientation
+                position: posArray,
+                orientation: orientArray
             });
         }
 

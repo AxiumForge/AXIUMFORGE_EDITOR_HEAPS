@@ -22,7 +22,7 @@ Formål: Emneinddelt indeks med target/intent, så AI kan slå viden op før nye
 
 ## 3) JDW/JDA World Standard
 - **Target/Intent**: JSON standard for 2D/3D SDF/CSG worlds med cascading defaults og JDA assets.
-- **Lokale**: `docs/jdw_sdf_csg_world_standard_v_0.md`
+- **Lokale**: `docs/shared/Standards/jdw_sdf_csg_world_standard_v_0.md` (symlink til shared AXIUMDOCS)
 - **Eksterne**: _(tilføj relevante artikler/blogs om SDF/CSG world formats)_
 - **Søgninger/Findings**:
   - 2025-11-24 – VP5 Phase 5.1 Complete – JDA 3D JSON parser implementation (77/77 tests passing)
@@ -47,6 +47,7 @@ Formål: Emneinddelt indeks med target/intent, så AI kan slå viden op før nye
   - 2025-11-24 – 🎉 VP6 Phase 6.1 COMPLETE – Asset Selector UI with runtime shader switching (3 pre-compiled shaders), no recompile needed for asset changes
   - 2025-11-24 – **CLI Shader Compiler System** – tools/Jda2Hxsl.hx (single/batch mode), compile-shaders.sh script, statement-based code generation (no inline lambdas)
   - 2025-11-24 – **Code Generation Strategy** – Unique variable naming (box_q0, smu_a0, rep_p0), statements array for complex operations, flat HXSL output
+  - 2025-11-25 – 🎉 VP6 Phase 6.2 COMPLETE – Inspector Panel with dynamic metadata display, handles both float and vec3 parameters/variants, full JDA parsing
 
 ## 5) HXSL/Heaps Noter
 - **Target/Intent**: Pipeline-noter, reference-links for HXSL/Heaps brugt af projekterne.
@@ -57,6 +58,9 @@ Formål: Emneinddelt indeks med target/intent, så AI kan slå viden op før nye
   - 2025-11-24 – HXSL @param fields require type-specific casting – Cannot access via Dynamic or Reflect.setField, must cast to specific shader class
   - 2025-11-24 – Heaps h2d UI z-order – Children rendered in add order, use `addChildAt(child, 0)` to add at bottom of display list
   - 2025-11-24 – Camera orientation fix – cameraUp = (0, -1, 0) needed for correct Y-up coordinate system in HXSL raymarching shaders
+  - 2025-11-25 – HashLink array parsing – Cannot directly cast JSON arrays to Array<Float>, must iterate and cast each element individually
+  - 2025-11-25 – h2d.Interactive z-order input handling – Interactive elements must be below UI in z-order to allow UI to receive events first
+  - 2025-11-25 – JDA vec3 parameters – Default values can be arrays (e.g., [0.6, 0.6, 0.6]), not just single floats - handle both in Inspector UI
 
 ## Brugsmønster
 - Start med relevant kategori (target) før ny søgning.

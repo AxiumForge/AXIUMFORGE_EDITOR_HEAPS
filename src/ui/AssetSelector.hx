@@ -99,7 +99,6 @@ class AssetSelector extends Object {
     }
 
     function selectAsset(asset:AssetInfo) {
-        trace('Asset selected: ${asset.name}');
         currentAssetText.text = 'Current: ${asset.name}';
 
         if (onAssetSelected != null) {
