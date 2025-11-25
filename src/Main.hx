@@ -2,6 +2,9 @@ import camera.CameraState;
 import camera.CameraStateTools;
 import camera.CameraController;
 import ui.AssetSelector;
+import ui.Inspector;
+import ui.InspectorModel;
+import loader.Jda3dLoader;
 
 // Import generated shaders from CLI compilation
 import SphereBasicShader;
@@ -13,6 +16,8 @@ class Main extends hxd.App {
     var bitmap:h2d.Bitmap;
     var interactive:h2d.Interactive;
     var assetSelector:AssetSelector;
+    var inspector:Inspector;
+    var currentAssetPath:String;
 
     // Generated shaders (compiled from JDA assets via CLI)
     var sphereShader:SphereBasicShader;
@@ -39,8 +44,9 @@ class Main extends hxd.App {
         trace("Initialized with SphereShader");
 
         // Create fullscreen bitmap with current shader
-        bitmap = new h2d.Bitmap(h2d.Tile.fromColor(0x000000, engine.width, engine.height), s2d);
+        bitmap = new h2d.Bitmap(h2d.Tile.fromColor(0x000000, engine.width, engine.height));
         bitmap.addShader(currentShader);
+        s2d.addChildAt(bitmap, 0);  // Add at the bottom
 
         // Initialize camera controller with starting orbit state
         var initialState = CameraStateTools.createOrbit(
@@ -57,8 +63,9 @@ class Main extends hxd.App {
         // Initialize shader camera
         updateShaderCamera(currentShader);
 
-        // Setup fullscreen interactive for input
-        interactive = new h2d.Interactive(engine.width, engine.height, s2d);
+        // Setup fullscreen interactive for input (behind UI elements)
+        interactive = new h2d.Interactive(engine.width, engine.height);
+        s2d.addChildAt(interactive, 1);  // Add after bitmap but before UI
         interactive.enableRightButton = true;  // Enable middle mouse button
 
         interactive.onPush = function(e:hxd.Event) {
@@ -119,6 +126,15 @@ class Main extends hxd.App {
         });
         assetSelector.setPos(10, 10);
         // ===== End VP6 =====
+
+        // ===== VP6 Phase 6.2: Inspector Panel =====
+        inspector = new Inspector(s2d, engine.height);
+        inspector.positionRight(engine.width);
+
+        // Load initial asset data for inspector
+        currentAssetPath = "assets/jda3d/jda.shape.sphere_basic.json";
+        updateInspector(currentAssetPath);
+        // ===== End VP6.2 =====
     }
 
     /**
@@ -130,12 +146,21 @@ class Main extends hxd.App {
         // Remove old shader
         bitmap.remove();
 
-        // Select new shader
+        // Select new shader and asset path
+        var assetPath:String;
         currentShader = switch(assetName) {
-            case "Sphere": sphereShader;
-            case "Rounded Box": roundedBoxShader;
-            case "Pillar Repeat": pillarRepeatShader;
-            default: sphereShader;
+            case "Sphere":
+                assetPath = "assets/jda3d/jda.shape.sphere_basic.json";
+                sphereShader;
+            case "Rounded Box":
+                assetPath = "assets/jda3d/jda.shape.rounded_box.json";
+                roundedBoxShader;
+            case "Pillar Repeat":
+                assetPath = "assets/jda3d/jda.shape.pillar_repeat.json";
+                pillarRepeatShader;
+            default:
+                assetPath = "assets/jda3d/jda.shape.sphere_basic.json";
+                sphereShader;
         };
 
         // Create new bitmap with new shader at index 0 (bottom of z-order)
@@ -146,7 +171,24 @@ class Main extends hxd.App {
         // Update camera uniforms for new shader
         updateShaderCamera(currentShader);
 
+        // Update inspector with new asset data
+        currentAssetPath = assetPath;
+        updateInspector(currentAssetPath);
+
         trace('✓ Switched to $assetName - NO RECOMPILE NEEDED!');
+    }
+
+    /**
+     * Update inspector panel with asset data from JDA file
+     */
+    function updateInspector(assetPath:String) {
+        try {
+            var doc = Jda3dLoader.loadFromFile(assetPath);
+            var data = InspectorModel.fromJdaDocument(doc);
+            inspector.updateData(data);
+        } catch (e:Dynamic) {
+            trace('Warning: Could not load asset for inspector: $e');
+        }
     }
 
     /**

@@ -1,28 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Bound screenshot helper for the Heaps app window only.
-# Default process name is "Heaps"; override with HEAPS_APP env var.
+# Project-local wrapper around the shared AxiumScreenshot helper.
+# Uses local defaults suited for this repo.
 
-APP_NAME="${HEAPS_APP:-Heaps}"
-OUT_DIR="/Users/larsmathiasen/REPO/AXIUMFORGE_EDITOR_HEAPS/sc" # forced output dir
-STAMP="$(date +"%Y%m%d-%H%M%S")"
-OUT_FILE="${OUT_DIR}/heaps-${STAMP}.png"
+SHARED="/Users/larsmathiasen/REPO/AxiumScreenshot/screenshot.sh"
 
-mkdir -p "${OUT_DIR}"
-
-if ! pgrep -x "${APP_NAME}" >/dev/null 2>&1; then
-  echo "Process not running: ${APP_NAME}" >&2
-  exit 1
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  echo "Project screenshot wrapper; delegates to ${SHARED}"
+  echo "Defaults: SHOT_DIR=${SHOT_DIR:-/Users/larsmathiasen/REPO/AxiumGST/sc}, SHOT_PREFIX=${SHOT_PREFIX:-heaps}, SHOT_MAX_DIM=${SHOT_MAX_DIM:-1920}"
+  echo "All env vars supported by the shared script are forwarded (HEAPS_APP, HEAPS_DISPLAY, HEAPS_ALLOW_DISPLAY_FALLBACK, SHOT_*)."
+  exit 0
 fi
 
-# Grab the first window id of the Heaps process
-WIN_ID="$(osascript -e 'tell application "System Events" to get the id of first window of process "'"${APP_NAME}"'"' 2>/dev/null || true)"
-if [[ -z "${WIN_ID}" ]]; then
-  echo "No window id found for process: ${APP_NAME}" >&2
-  exit 1
-fi
+export SHOT_DIR="${SHOT_DIR:-/Users/larsmathiasen/REPO/AxiumGST/sc}"
+export SHOT_PREFIX="${SHOT_PREFIX:-heaps}"
+export SHOT_MAX_DIM="${SHOT_MAX_DIM:-1920}"
+export HEAPS_APP="${HEAPS_APP:-hl,Heaps,viewer}"
 
-echo "Capturing window ${WIN_ID} from process ${APP_NAME} -> ${OUT_FILE}"
-screencapture -x -l "${WIN_ID}" "${OUT_FILE}"
-echo "Saved screenshot: ${OUT_FILE}"
+exec "${SHARED}" "$@"

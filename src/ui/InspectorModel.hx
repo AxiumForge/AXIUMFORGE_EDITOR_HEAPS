@@ -94,22 +94,17 @@ class InspectorModel {
             return params;
         }
 
-        for (paramName in Reflect.fields(doc.paramSchema)) {
-            var paramDef: Dynamic = Reflect.field(doc.paramSchema, paramName);
-
-            var type: String = Reflect.field(paramDef, "type");
-            var defaultValue: Float = Reflect.field(paramDef, "defaultValue");
-            var min: Dynamic = Reflect.field(paramDef, "min");
-            var max: Dynamic = Reflect.field(paramDef, "max");
+        for (paramName in doc.paramSchema.keys()) {
+            var paramDef = doc.paramSchema.get(paramName);
 
             params.push({
                 name: paramName,
-                type: type,
-                defaultValue: defaultValue,
-                hasMin: min != null,
-                min: min != null ? min : 0.0,
-                hasMax: max != null,
-                max: max != null ? max : 0.0
+                type: paramDef.type,
+                defaultValue: paramDef.defaultValue,
+                hasMin: paramDef.min != null,
+                min: paramDef.min != null ? paramDef.min : 0.0,
+                hasMax: paramDef.max != null,
+                max: paramDef.max != null ? paramDef.max : 0.0
             });
         }
 
@@ -126,14 +121,15 @@ class InspectorModel {
             return materials;
         }
 
-        for (materialName in Reflect.fields(doc.materials)) {
-            var material: Material = Reflect.field(doc.materials, materialName);
+        for (materialName in doc.materials.keys()) {
+            var material = doc.materials.get(materialName);
 
             // Convert base color array to ColorInfo
+            // Explicit cast needed for HashLink array access
             var baseColor: ColorInfo = {
-                r: material.baseColor[0],
-                g: material.baseColor[1],
-                b: material.baseColor[2]
+                r: (material.baseColor[0] : Float),
+                g: (material.baseColor[1] : Float),
+                b: (material.baseColor[2] : Float)
             };
 
             materials.push({
@@ -158,14 +154,14 @@ class InspectorModel {
             return variants;
         }
 
-        for (variantName in Reflect.fields(doc.variants)) {
-            var variantParams: Dynamic = Reflect.field(doc.variants, variantName);
+        for (variantName in doc.variants.keys()) {
+            var variantParams = doc.variants.get(variantName);
 
             var paramInfos: Array<VariantParamInfo> = [];
 
             if (variantParams != null) {
-                for (paramName in Reflect.fields(variantParams)) {
-                    var paramValue: Float = Reflect.field(variantParams, paramName);
+                for (paramName in variantParams.keys()) {
+                    var paramValue: Float = variantParams.get(paramName);
 
                     paramInfos.push({
                         name: paramName,
@@ -193,15 +189,15 @@ class InspectorModel {
             return attachPoints;
         }
 
-        for (pointName in Reflect.fields(doc.attachPoints)) {
-            var point: AttachPoint = Reflect.field(doc.attachPoints, pointName);
+        for (pointName in doc.attachPoints.keys()) {
+            var point = doc.attachPoints.get(pointName);
 
             attachPoints.push({
                 name: pointName,
                 position: {
-                    x: point.position[0],
-                    y: point.position[1],
-                    z: point.position[2]
+                    x: (point.position[0] : Float),
+                    y: (point.position[1] : Float),
+                    z: (point.position[2] : Float)
                 }
             });
         }
