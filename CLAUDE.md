@@ -210,3 +210,4 @@ axium_editor_hx/
   - TODO.md protects against crashes and context loss
 - In @RAG.md is indexed docs references and everytime you make a new docs search you add the search to the RAG.md with target link remote or local a like
 - screenshots by @screenshot.sh to @sc/
+- Shared docs is now in @docs/shared

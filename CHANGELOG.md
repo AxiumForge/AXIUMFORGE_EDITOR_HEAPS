@@ -376,6 +376,68 @@ function sdf(p: Vec3): Float {
 
 ---
 
+### Phase 6.2: Inspector Panel ✅ COMPLETE (2025-11-25)
+
+#### Added
+- **UI Component** (`src/ui/Inspector.hx`)
+  - `Inspector` class extending `h2d.Object`
+  - Right-side panel (280px width, positioned at screen edge)
+  - Semi-transparent background (0x1a1a1a, 0.95 alpha)
+  - `updateAssetInfo(doc: Jda3dDocument)` - Populate panel with JDA metadata
+  - Displays all JDA document sections:
+    - **Metadata**: id, type (sdf3d/sdf2d), version
+    - **Parameters**: param_schema with type, default, min, max values
+    - **Materials**: Material properties (model, color RGB, roughness, metallic)
+    - **Variants**: Parameter overrides for different configurations
+    - **Attach Points**: Composition points with positions
+  - Formatted text with section headers (=== Metadata ===, etc.)
+  - Dynamic parameter type handling (float and vec3)
+
+- **Main.hx Integration**
+  - Initialize Inspector panel at (screenWidth - 290, 10)
+  - Call `updateAssetInfo()` when asset selected
+  - Pass full `Jda3dDocument` to inspector
+  - Inspector updates dynamically on asset switching
+
+#### Fixed
+- **Vec3 Parameter Parsing**
+  - Problem: Parameter defaults can be arrays `[r, g, b]` or single floats
+  - Solution: Dynamic type checking for float vs vec3
+  - Location: `Inspector.hx` parameter display logic
+
+- **HashLink Array Parsing**
+  - Problem: Cannot directly cast JSON arrays to `Array<Float>` in HashLink
+  - Error: Type mismatch when accessing array elements
+  - Solution: Iterate JSON array and cast each element individually
+  - Location: `Inspector.hx` color parsing
+
+#### Verified
+- **Compilation**: All code compiles successfully ✅
+- **Inspector Rendering**: Panel appears at right side with correct layout ✅
+- **Metadata Display**: Shows id, type, version correctly ✅
+- **Parameters Display**: Shows radius (float) with default 1, min 0.25, max 4 ✅
+- **Materials Display**: Shows mat_default with PBR model, RGB color, roughness 0.2, metallic 0 ✅
+- **Variants Display**: Shows hero (radius 1.25) and default (radius 1) variants ✅
+- **Attach Points Display**: Shows bottom (0, -1, 0) and top (0, 1, 0) positions ✅
+- **Dynamic Updates**: Inspector updates when switching between assets ✅
+- **No Regressions**: Asset selector, rendering, camera controls all working ✅
+
+### 🎉 VP6 Phase 6.2 Complete!
+
+**Deliverable**: Inspector panel with complete JDA metadata display
+- ✅ Right-side inspector panel with formatted sections
+- ✅ Displays all JDA document properties (metadata, parameters, materials, variants, attach points)
+- ✅ Dynamic parameter type handling (float and vec3)
+- ✅ Updates on asset selection
+- ✅ All existing features working (asset selector, rendering, camera)
+
+**Technical Achievement**:
+- Solved HashLink array parsing limitation with iterative casting
+- Dynamic type detection for float vs vec3 parameters
+- Clean formatted text display with section headers
+
+---
+
 ## Future Phases
 
 ### Phase 2 - JDA Gallery
