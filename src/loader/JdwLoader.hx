@@ -97,8 +97,8 @@ class JdwLoader {
         };
     }
 
-    static function parseMaterials(json:Dynamic):Map<String, Material> {
-        var materials = new Map<String, Material>();
+    static function parseMaterials(json:Dynamic):Map<String, JdwMaterial> {
+        var materials = new Map<String, JdwMaterial>();
 
         if (json == null) return materials;
 
@@ -110,8 +110,8 @@ class JdwLoader {
         return materials;
     }
 
-    static function parseMaterial(json:Dynamic):Material {
-        var mat:Material = {
+    static function parseMaterial(json:Dynamic):JdwMaterial {
+        var mat:JdwMaterial = {
             shading_model: json.shading_model,
             base_color: parseFloatArray(json.base_color)
         };

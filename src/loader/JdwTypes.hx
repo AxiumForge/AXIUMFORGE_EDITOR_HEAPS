@@ -39,7 +39,7 @@ typedef JdwUnits = {
 typedef JdwGlobals = {
     var space:SpaceDefinition;
     var raymarch:RaymarchSettings;
-    var materials:Map<String, Material>;
+    var materials:Map<String, JdwMaterial>;
     var assets:AssetRegistry;
 }
 
@@ -56,7 +56,7 @@ typedef RaymarchSettings = {
     var max_distance:Float;
 }
 
-typedef Material = {
+typedef JdwMaterial = {
     var shading_model:String;  // "lambert", "pbr", etc.
     var base_color:Array<Float>;  // RGBA
     @:optional var sdf2d_overlay:String;

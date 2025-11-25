@@ -5,6 +5,7 @@ import camera.CameraControllerTest;
 import loader.Jda3dLoaderTest;
 import loader.SdfEvaluatorTest;
 import loader.JdwLoaderTest;
+import ui.InspectorModelTest;
 
 /**
  * Test runner for AxiumForge Editor
@@ -23,6 +24,9 @@ class TestMain {
         runner.addCase(new Jda3dLoaderTest());
         runner.addCase(new SdfEvaluatorTest());
         runner.addCase(new JdwLoaderTest());
+
+        // UI tests
+        runner.addCase(new InspectorModelTest());
 
         // Run all tests
         Report.create(runner);

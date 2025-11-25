@@ -1,9 +1,10 @@
-package tests.loader;
+package loader;
 
 import utest.Test;
 import utest.Assert;
 import loader.JdwLoader;
 import loader.JdwTypes;
+import loader.Jda3dTypes.PrimitiveShape;
 
 /**
  * TDD Tests for JDW (JSON Description of Worlds) Loader

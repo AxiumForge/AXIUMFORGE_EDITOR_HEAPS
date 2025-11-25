@@ -1,0 +1,16 @@
+{
+	"name": "haxelib",
+	"url" : "https://lib.haxe.org/documentation/",
+	"license": "MIT",
+	"tags": ["haxelib", "core"],
+	"description": "The haxelib client",
+	"classPath": "src",
+	"version": "4.2.0",
+	"releasenote": "See CHANGELOG at https://github.com/HaxeFoundation/haxelib/blob/development/CHANGES.md#420-2025-07-04",
+	"contributors": ["HaxeFoundation", "back2dos", "ncannasse", "jason", "Simn", "nadako", "andyli"],
+	"dependencies":{
+		"hx3compat": "",
+		"hx4compat": "",
+		"crypto": ""
+	}
+}
