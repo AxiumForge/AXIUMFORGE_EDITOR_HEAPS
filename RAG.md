@@ -62,6 +62,8 @@ Formål: Emneinddelt indeks med target/intent, så AI kan slå viden op før nye
   - 2025-11-25 – h2d.Interactive z-order input handling – Interactive elements must be below UI in z-order to allow UI to receive events first
   - 2025-11-25 – JDA vec3 parameters – Default values can be arrays (e.g., [0.6, 0.6, 0.6]), not just single floats - handle both in Inspector UI
   - 2025-11-25 – **InspectorModel typedef fix** – Changed ParamInfo.defaultValue and VariantParamInfo.value from String to Dynamic to preserve original JSON types (Float/Array). Tests expected Float but got String when typedef forced string conversion. Solution: Keep raw Dynamic values, let UI handle string conversion for display. Fixed 3 test failures → 205/205 tests passing ✅
+  - 2025-11-27 – **File Picker Implementation** – hl.UI.loadFile() does NOT work on macOS (returns null, no dialog). Solution: Created FileBrowser.hx - custom Heaps UI popup with directory navigation, .json filtering, cross-platform. Also added CLI support via Sys.args() for AI/automation friendly asset loading. Both approaches working.
+  - 2025-11-27 – **hl.UI limitations on macOS** – Native file dialog (hl.UI.loadFile) requires platform-specific setup/permissions on macOS. For cross-platform reliability, use custom Heaps UI components instead of relying on hl.UI file dialogs.
 
 ## Brugsmønster
 - Start med relevant kategori (target) før ny søgning.

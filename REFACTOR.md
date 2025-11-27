@@ -9,23 +9,31 @@
 
 ## Next: File Picker Implementation
 
-### [] **Implement**: System File Picker for Asset Selection
+### [X] **Implement**: File Picker for Asset Selection ✅
 
 **Intention**: Make a file picker popup/system file picker for selecting asset folders
 
-**Current State**:
-- ✅ Asset list display works (shows files in a folder)
-- ❌ Cannot select which folder contains assets
+**Implemented Solutions**:
 
-**Requirements**:
-- Native system file picker dialog
-- Folder selection (not file selection)
-- Update asset list when new folder selected
-- File picker will have larger role later in project
+1. **CLI Support** ✅
+   ```bash
+   hl output.hl path/to/asset.json
+   ```
+   - Reads `Sys.args()` in `Main.main()`
+   - Loads asset from command line argument
+   - Auto-switches to correct shader
 
-**Related Code**:
-- `src/ui/AssetSelector.hx` - Current asset list UI
-- Platform: macOS (Darwin 25.1.0)
+2. **In-App File Browser Popup** ✅
+   - `src/ui/FileBrowser.hx` - Cross-platform popup overlay
+   - Directory navigation (up/down)
+   - Filters for .json files
+   - Click-to-select functionality
+   - AI and human friendly
+
+**Code**:
+- `src/Main.hx` - CLI argument parsing
+- `src/ui/FileBrowser.hx` - Popup file browser
+- `src/ui/AssetSelector.hx` - Browse button integration
 
 ---
 

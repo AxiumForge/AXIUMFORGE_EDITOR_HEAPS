@@ -237,6 +237,8 @@ JDA JSON → Jda3dLoader → SDF Tree → SdfEvaluator → HXSL Code → Generat
 - `assets/jdw/world/world.demo_axium.json`
 
 ---
+## ATTENTION
+#### DOING REFACTOR.md right now all suspended until done
 
 ## VP2: Hot-Reload Shader System 📋 DEFERRED (after VP5)
 

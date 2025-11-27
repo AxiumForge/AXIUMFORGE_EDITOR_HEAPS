@@ -1,0 +1,44 @@
+{
+  "jda_version": "0.1.0",
+  "id": "test.box",
+  "type": "3d",
+
+  "param_schema": {
+    "size": {
+      "type": "vec3",
+      "default": [1.0, 1.0, 1.0],
+      "min": 0.1,
+      "max": 5.0,
+      "description": "Box dimensions"
+    }
+  },
+
+  "sdf_tree": {
+    "kind": "primitive",
+    "shape": "box",
+    "params": {
+      "size": ["param", "size"]
+    }
+  },
+
+  "materials": {
+    "mat.default": {
+      "shading_model": "pbr",
+      "base_color": [0.3, 0.9, 0.3, 1.0],
+      "roughness": 0.4,
+      "metallic": 0.1
+    }
+  },
+
+  "variants": {
+    "default": {
+      "size": [1.0, 1.0, 1.0]
+    },
+    "tall": {
+      "size": [0.5, 2.0, 0.5]
+    },
+    "wide": {
+      "size": [2.0, 0.5, 2.0]
+    }
+  }
+}

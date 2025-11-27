@@ -1,0 +1,51 @@
+{
+  "jda_version": "0.1.0",
+  "id": "test.torus",
+  "type": "3d",
+
+  "param_schema": {
+    "major_radius": {
+      "type": "float",
+      "default": 1.0,
+      "min": 0.1,
+      "max": 3.0,
+      "description": "Torus major radius"
+    },
+    "minor_radius": {
+      "type": "float",
+      "default": 0.3,
+      "min": 0.05,
+      "max": 1.0,
+      "description": "Torus minor radius"
+    }
+  },
+
+  "sdf_tree": {
+    "kind": "primitive",
+    "shape": "torus",
+    "params": {
+      "major_radius": ["param", "major_radius"],
+      "minor_radius": ["param", "minor_radius"]
+    }
+  },
+
+  "materials": {
+    "mat.default": {
+      "shading_model": "pbr",
+      "base_color": [0.9, 0.3, 0.9, 1.0],
+      "roughness": 0.2,
+      "metallic": 0.8
+    }
+  },
+
+  "variants": {
+    "default": {
+      "major_radius": 1.0,
+      "minor_radius": 0.3
+    },
+    "thin": {
+      "major_radius": 1.2,
+      "minor_radius": 0.1
+    }
+  }
+}

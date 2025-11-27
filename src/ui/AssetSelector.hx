@@ -5,7 +5,7 @@ import h2d.Object;
 import h2d.Interactive;
 import h2d.Graphics;
 import sys.FileSystem;
-import hl.UI;
+import ui.FileBrowser;
 using StringTools;
 
 /**
@@ -191,46 +191,17 @@ class AssetSelector extends Object {
     }
 
     function openFilePicker() {
-        trace("Opening file picker...");
+        trace("Opening file browser popup...");
 
-        // Use macOS native file dialog via osascript
-        // This works cross-platform (on non-macOS, falls back to hl.UI)
-        var selectedFile:String = null;
-
-        #if (sys && mac)
-        // macOS: Use osascript for native file dialog
-        try {
-            var process = new sys.io.Process('osascript', [
-                '-e',
-                'POSIX path of (choose file with prompt "Select JDA or JDW Asset" of type {"json"} without invisibles)'
-            ]);
-            var exitCode = process.exitCode();
-            if (exitCode == 0) {
-                selectedFile = StringTools.trim(process.stdout.readAll().toString());
-                trace('File picker selected: $selectedFile');
-            } else {
-                trace("File picker cancelled by user");
+        // Create file browser popup overlay
+        var browser = new FileBrowser(
+            getScene(),  // Add to root scene
+            defaultDir,  // Start in assets directory
+            function(selectedPath:String) {
+                trace('File browser selected: $selectedPath');
+                loadExternalFile(selectedPath);
             }
-            process.close();
-        } catch (e:Dynamic) {
-            trace('File picker error: $e');
-        }
-        #else
-        // Fallback: Try hl.UI.loadFile()
-        selectedFile = UI.loadFile({
-            title: "Select JDA or JDW Asset",
-            filters: [
-                {name: "Asset Files", exts: ["json"]},
-                {name: "All Files", exts: ["*"]}
-            ]
-        });
-        #end
-
-        if (selectedFile != null && selectedFile.length > 0) {
-            loadExternalFile(selectedFile);
-        } else {
-            trace("No file selected");
-        }
+        );
     }
 
     function loadExternalFile(filePath:String) {
