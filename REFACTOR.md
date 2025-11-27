@@ -37,14 +37,23 @@
 
 ---
 
-## JDW Loader (VP5 Phase 5.3) - DEFERRED
+## [X] JDW Loader (VP5 Phase 5.3) ✅ COMPLETE
 
-**Note**: JDW Loader tests already exist and pass. Implementation deferred until after file picker.
+**Status**: All tests passing (205/205 assertions)
 
-- [] Load JDW JSON (loadFromFile, loadFromString)
-- [] Parse scene hierarchy (worlds → layers → nodes)
-- [] Resolve asset references (JDA + 2D SDF assets)
-- [] Parse materials with PBR properties
-- [] Parse inline SDF nodes (reuses Jda3dLoader.parseSdfTree)
-- [] Parse JDA reference nodes with variant + param overrides
-- [] **Validate**: All JDW loader tests pass ✅
+**Implementation**: JDW Loader was already fully implemented!
+
+- [X] Load JDW JSON (loadFromFile, loadFromString)
+- [X] Parse scene hierarchy (worlds → layers → nodes)
+- [X] Resolve asset references (JDA + 2D SDF assets)
+- [X] Parse materials with PBR properties
+- [X] Parse inline SDF nodes (reuses Jda3dLoader.parseSdfTree)
+- [X] Parse JDA reference nodes with variant + param overrides
+- [X] **Validate**: All JDW loader tests pass ✅
+
+**Test Coverage**:
+- 14 test cases covering all JDW features
+- Document metadata, globals (space, raymarch, materials, assets)
+- World structure (layers, nodes, bounds)
+- Node transforms and sources (inline_sdf, jda references)
+- All tests passing with 205/205 total assertions

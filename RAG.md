@@ -48,6 +48,7 @@ Formål: Emneinddelt indeks med target/intent, så AI kan slå viden op før nye
   - 2025-11-24 – **CLI Shader Compiler System** – tools/Jda2Hxsl.hx (single/batch mode), compile-shaders.sh script, statement-based code generation (no inline lambdas)
   - 2025-11-24 – **Code Generation Strategy** – Unique variable naming (box_q0, smu_a0, rep_p0), statements array for complex operations, flat HXSL output
   - 2025-11-25 – 🎉 VP6 Phase 6.2 COMPLETE – Inspector Panel with dynamic metadata display, handles both float and vec3 parameters/variants, full JDA parsing
+  - 2025-11-27 – 🎉 VP5 Phase 5.3 COMPLETE – JDW Scene Loader (14 tests, 205/205 total assertions passing), complete scene hierarchy parsing (worlds → layers → nodes), inline SDF and JDA references with overrides
 
 ## 5) HXSL/Heaps Noter
 - **Target/Intent**: Pipeline-noter, reference-links for HXSL/Heaps brugt af projekterne.
@@ -64,6 +65,8 @@ Formål: Emneinddelt indeks med target/intent, så AI kan slå viden op før nye
   - 2025-11-25 – **InspectorModel typedef fix** – Changed ParamInfo.defaultValue and VariantParamInfo.value from String to Dynamic to preserve original JSON types (Float/Array). Tests expected Float but got String when typedef forced string conversion. Solution: Keep raw Dynamic values, let UI handle string conversion for display. Fixed 3 test failures → 205/205 tests passing ✅
   - 2025-11-27 – **File Picker Implementation** – hl.UI.loadFile() does NOT work on macOS (returns null, no dialog). Solution: Created FileBrowser.hx - custom Heaps UI popup with directory navigation, .json filtering, cross-platform. Also added CLI support via Sys.args() for AI/automation friendly asset loading. Both approaches working.
   - 2025-11-27 – **hl.UI limitations on macOS** – Native file dialog (hl.UI.loadFile) requires platform-specific setup/permissions on macOS. For cross-platform reliability, use custom Heaps UI components instead of relying on hl.UI file dialogs.
+  - 2025-11-27 – **Runtime HXSL Compilation with hscript** – (https://lib.haxe.org/p/hscript/) – Enables dynamic shader compilation at runtime without pre-compilation. Workflow: hscript.Parser (parse HXSL code string) → hscript.Macro.convert() → hxsl.MacroParser.parseExpr() → hxsl.Checker.check() → hxsl.DynamicShader. Allows browsed JDA files to compile and render their shaders dynamically. Key requirements: allowMetadata=true, allowTypes=true, allowJSON=true on Parser.
+  - 2025-11-27 – **🔥 CRITICAL: @:import NOT SUPPORTED in runtime HXSL** – The `@:import` directive (e.g., `@:import h3d.shader.Base2d;`) causes "Error(Not implemented)" when compiling HXSL dynamically via hscript/DynamicShader. Solution: Define input/output variables explicitly: `var input : { uv : Vec2 }; var output : { color : Vec4 };` instead of importing Base2d. Use `input.uv` instead of `calculatedUV` and `output.color` instead of `pixelColor`. Tested with TestMinimalShader.hx - confirmed working without @:import, broken with it.
 
 ## Brugsmønster
 - Start med relevant kategori (target) før ny søgning.

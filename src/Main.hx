@@ -16,6 +16,7 @@ import PillarRepeatShader;
 
 class Main extends hxd.App {
     static var cliAssetPath:String = null;  // Asset path from CLI argument
+    static var screenshotPath:String = null;  // Screenshot path from CLI argument
 
     var currentShader:Dynamic;  // Can be any of the 3 shaders - using Dynamic for direct property access
     var bitmap:h2d.Bitmap;
@@ -37,6 +38,10 @@ class Main extends hxd.App {
     var isShiftPressed:Bool = false;
     var lastMouseX:Float = 0;
     var lastMouseY:Float = 0;
+
+    // Screenshot mode
+    var frameCounter:Int = 0;
+    var screenshotTaken:Bool = false;
 
     override function init() {
         // Initialize all 3 generated shaders (from CLI compilation)
@@ -144,9 +149,118 @@ class Main extends hxd.App {
             switchShader(cliAssetPath);
         } else {
             currentAssetPath = "assets/jda3d/jda.shape.sphere_basic.json";
+            // Auto-position camera for initial asset
+            autoCameraPosition(currentAssetPath);
         }
         updateInspector(currentAssetPath);
         // ===== End VP6.2 =====
+    }
+
+    /**
+     * Estimate bounding sphere radius from SDF tree
+     * Returns a conservative radius estimate for camera auto-positioning
+     */
+    function estimateBoundingRadius(sdfTree:loader.Jda3dTypes.SdfNode):Float {
+        return switch(sdfTree) {
+            case Primitive(dim, shape, params):
+                switch(shape) {
+                    case Sphere:
+                        // Sphere: radius from params (default 1.0)
+                        if (params.exists("radius")) params.get("radius") else 1.0;
+
+                    case Box:
+                        // Box: diagonal from center to corner
+                        if (params.exists("size")) {
+                            var sizeArray:Array<Dynamic> = cast params.get("size");
+                            var sx:Float = sizeArray[0];
+                            var sy:Float = sizeArray[1];
+                            var sz:Float = sizeArray[2];
+                            // Half-size diagonal
+                            Math.sqrt(sx*sx + sy*sy + sz*sz) * 0.5;
+                        } else {
+                            1.732;  // Default cube size=2, radius=sqrt(3)
+                        }
+
+                    case Torus:
+                        // Torus: major_radius + minor_radius
+                        var major = if (params.exists("major_radius")) params.get("major_radius") else 1.0;
+                        var minor = if (params.exists("minor_radius")) params.get("minor_radius") else 0.3;
+                        major + minor;
+
+                    case Cylinder:
+                        // Cylinder: max of radius and half height
+                        var radius = if (params.exists("radius")) params.get("radius") else 1.0;
+                        var height = if (params.exists("height")) params.get("height") else 2.0;
+                        Math.max(radius, height * 0.5);
+
+                    case Capsule:
+                        // Capsule: radius + half height
+                        var radius = if (params.exists("radius")) params.get("radius") else 1.0;
+                        var height = if (params.exists("height")) params.get("height") else 2.0;
+                        radius + height * 0.5;
+
+                    case Plane:
+                        // Plane: infinite, use default camera distance
+                        3.0;
+                }
+
+            case Operation(op, params, children):
+                // CSG: conservative max of children + 20% margin
+                var maxRadius = 0.0;
+                for (child in children) {
+                    var childRadius = estimateBoundingRadius(child);
+                    if (childRadius > maxRadius) maxRadius = childRadius;
+                }
+                maxRadius * 1.2;
+
+            case Modifier(modType, modParams, child):
+                // Modifiers: child bounding * modifier factor
+                var childRadius = estimateBoundingRadius(child);
+                switch(modType) {
+                    case Repeat:
+                        // Repeat: use base child size (don't multiply by infinite repetition)
+                        childRadius;
+                    default:
+                        // Other modifiers: conservative estimate
+                        childRadius * 1.5;
+                }
+
+            case Reference(assetId, params):
+                // Reference: can't estimate without loading, use default
+                2.0;
+        };
+    }
+
+    /**
+     * Auto-position camera to frame the loaded asset
+     */
+    function autoCameraPosition(assetPath:String) {
+        try {
+            var doc = Jda3dLoader.loadFromFile(assetPath);
+            var boundingRadius = estimateBoundingRadius(doc.sdfTree);
+
+            // Calculate optimal camera distance (2.5x bounding radius for good framing)
+            var distance = boundingRadius * 2.5;
+
+            // Clamp to reasonable values
+            if (distance < 2.0) distance = 2.0;
+            if (distance > 20.0) distance = 20.0;
+
+            // Create new camera state with auto-positioned camera
+            var newState = CameraStateTools.createOrbit(
+                new h3d.Vector(0, 0, 0),  // Target at origin (assets are centered)
+                distance,
+                45.0,   // Yaw 45°
+                -30.0   // Pitch -30° (looking down)
+            );
+
+            cameraController = new CameraController(newState);
+            updateCameraFromState();
+
+            trace('Auto-positioned camera: boundingRadius=$boundingRadius, distance=$distance');
+        } catch (e:Dynamic) {
+            trace('Warning: Could not auto-position camera: $e');
+        }
     }
 
     /**
@@ -194,6 +308,9 @@ class Main extends hxd.App {
         bitmap = new h2d.Bitmap(h2d.Tile.fromColor(0x000000, engine.width, engine.height));
         bitmap.addShader(currentShader);
         s2d.addChildAt(bitmap, 0);  // Add at the back so UI stays on top
+
+        // Auto-position camera to frame the asset
+        autoCameraPosition(assetPath);
 
         // Update camera uniforms for new shader
         updateShaderCamera(currentShader);
@@ -254,15 +371,72 @@ class Main extends hxd.App {
     override function update(dt:Float) {
         // Update current shader parameters each frame
         updateShaderCamera(currentShader);
+
+        // Screenshot mode: capture after a few frames (rendering stabilized)
+        if (screenshotPath != null && !screenshotTaken) {
+            frameCounter++;
+
+            if (frameCounter >= 3) {  // Wait 3 frames for rendering to stabilize
+                takeScreenshot(screenshotPath);
+                screenshotTaken = true;
+
+                // Exit after screenshot
+                haxe.Timer.delay(function() {
+                    trace('Screenshot saved, exiting...');
+                    Sys.exit(0);
+                }, 100);  // Small delay to ensure screenshot is written
+            }
+        }
+    }
+
+    /**
+     * Capture screenshot and save to file
+     */
+    function takeScreenshot(path:String) {
+        try {
+            // Ensure sc/ directory exists
+            var dir = haxe.io.Path.directory(path);
+            if (dir != "" && !sys.FileSystem.exists(dir)) {
+                sys.FileSystem.createDirectory(dir);
+            }
+
+            // Capture screen pixels from engine texture
+            var tex = engine.getCurrentRenderTarget();
+            if (tex == null) tex = h3d.mat.Texture.fromColor(0x000000, 1, 1);  // Fallback
+
+            var pixels = engine.driver.capturePixels(tex, 0, 0);
+
+            // Save as PNG
+            var png = pixels.toPNG();
+            sys.io.File.saveBytes(path, png);
+
+            trace('Screenshot saved: $path (${pixels.width}x${pixels.height})');
+        } catch (e:Dynamic) {
+            trace('Screenshot error: $e');
+        }
     }
 
     static function main() {
-        // Check for CLI arguments
+        // Parse CLI arguments
         var args = Sys.args();
-        if (args.length > 0) {
-            cliAssetPath = args[0];
-            trace('CLI: Will load asset from: $cliAssetPath');
+        var i = 0;
+        while (i < args.length) {
+            var arg = args[i];
+
+            if (arg == "--screenshot" && i + 1 < args.length) {
+                screenshotPath = args[i + 1];
+                trace('CLI: Screenshot mode - will save to: $screenshotPath');
+                i += 2;
+            } else {
+                // First non-flag argument is asset path
+                if (cliAssetPath == null) {
+                    cliAssetPath = arg;
+                    trace('CLI: Will load asset from: $cliAssetPath');
+                }
+                i++;
+            }
         }
+
         new Main();
     }
 }

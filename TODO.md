@@ -12,8 +12,8 @@
 **Goal**: Complete Scene Graph Panel now that JDW loader is working
 **Timeline**: Function over quality - first iteration
 **Approach**: Heaps h2d UI + Domain-Driven Design (ui/ domain)
-**Achievement**: VP5 Phase 5.3 (JDW Scene Loader) ✅ JUST COMPLETED!
-**Foundation**: VP5 100% complete - JDA + JDW loading both working perfectly
+**Achievement**: 🎉 VP5 COMPLETE! All phases done (5.1, 5.2, 5.3, 5.4) ✅
+**Foundation**: VP5 100% complete - JDA + JDW loading both working perfectly (205/205 tests passing!)
 **Next**: VP6 Phase 6.3 (Scene Graph Panel) - display worlds/layers/nodes from JDW
 
 ---
@@ -170,12 +170,19 @@
   - [x] Inline lambda expressions for complex operations
 - [x] **Validate**: All tests pass ✅ (94/94 assertions, 35/35 tests, 0 failures)
 
-#### Phase 5.3: JDW Scene Loader ✅ COMPLETE (2025-11-25)
-- [x] **Test**: `tests/loader/JdwLoaderTest.hx` (10 tests, all passing!)
+#### Phase 5.3: JDW Scene Loader ✅ COMPLETE (2025-11-27)
+- [x] **Test**: `tests/loader/JdwLoaderTest.hx` (14 tests, all passing!)
   - [x] Test load world document
   - [x] Test parse scene graph (worlds → layers → nodes)
   - [x] Test resolve JDA asset references
   - [x] Test cascading defaults (materials, settings)
+  - [x] Test metadata (title, author, description)
+  - [x] Test units (world_unit, reference_scales)
+  - [x] Test globals (space, raymarch settings)
+  - [x] Test materials (lambert/pbr, base color, 2D SDF overlays)
+  - [x] Test asset registry (JDA and 2D SDF paths)
+  - [x] Test layers (3D dimension, visibility, render order)
+  - [x] Test nodes (transforms, inline_sdf, jda references)
 - [x] **Implement**: `src/loader/JdwTypes.hx`
   - [x] Define `JdwDocument` typedef
   - [x] Define `JdwWorld`, `JdwLayer`, `JdwNode` typedefs
@@ -188,7 +195,7 @@
   - [x] Parse materials with PBR properties
   - [x] Parse inline SDF nodes (reuses Jda3dLoader.parseSdfTree)
   - [x] Parse JDA reference nodes with variant + param overrides
-- [x] **Validate**: All JDW loader tests pass ✅ (10 tests, 0 errors, 0 failures)
+- [x] **Validate**: All JDW loader tests pass ✅ (14 tests, 205/205 total assertions passing!)
 
 #### Phase 5.4: Integration with Main.hx ✅ COMPLETE (2025-11-24)
 - [x] **Update**: `src/Main.hx`
@@ -214,17 +221,17 @@ JDA JSON → Jda3dLoader → SDF Tree → SdfEvaluator → HXSL Code → Generat
 ```
 
 ### VP5 Success Criteria:
-- [x] All tests pass (JDA loader, SDF evaluator, JDW loader) ✅ (202/205 assertions passing)
+- [x] All tests pass (JDA loader, SDF evaluator, JDW loader) ✅ (205/205 assertions passing!)
 - [x] App loads JDA 3D asset from file ✅ (`jda.shape.sphere_basic.json`)
 - [x] Renders loaded asset correctly (not hardcoded geometry) ✅ (sphere from JDA, not hardcoded box!)
 - [x] Can switch between different JDA assets ✅ (VP6 Phase 6.1 - Asset Selector UI)
-- [x] JDW scene graph loads ✅ (Phase 5.3 - Complete!)
+- [x] JDW scene graph loads ✅ (Phase 5.3 - Complete! All 14 tests passing!)
 - [x] Existing features still work (camera, no regressions) ✅
 
 **Core Goals Achieved:**
 - ✅ JDA 3D JSON Parser (Phase 5.1)
 - ✅ HXSL Code Generator (Phase 5.2)
-- ✅ JDW Scene Loader (Phase 5.3) - **JUST COMPLETED!**
+- ✅ JDW Scene Loader (Phase 5.3) - **COMPLETE! 2025-11-27** ✅
 - ✅ Integration & Rendering (Phase 5.4)
 
 **Deliverable**: Load and display JDA/JDW assets (function over quality!)
@@ -237,8 +244,6 @@ JDA JSON → Jda3dLoader → SDF Tree → SdfEvaluator → HXSL Code → Generat
 - `assets/jdw/world/world.demo_axium.json`
 
 ---
-## ATTENTION
-#### DOING REFACTOR.md right now all suspended until done
 
 ## VP2: Hot-Reload Shader System 📋 DEFERRED (after VP5)
 

@@ -4,5 +4,6 @@
 -main TestMain
 -lib heaps
 -lib utest
+-lib hscript
 -hl bin/tests.hl
 -D test

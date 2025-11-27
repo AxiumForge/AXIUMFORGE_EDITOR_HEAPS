@@ -4,6 +4,8 @@
 -main Main
 -lib heaps
 -lib hlsdl
+-lib hscript
+-lib format
 -hl bin/viewer.hl
 -D windowSize=1280x720
 -D windowTitle=Axium Viewer MVP
