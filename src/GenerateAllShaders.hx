@@ -15,7 +15,7 @@ class GenerateAllShaders {
             try {
                 var doc = Jda3dLoader.loadFromFile(asset.path);
                 var code = SdfEvaluator.generateShaderClass(doc.sdfTree, asset.name);
-                File.saveContent('src/${asset.name}.hx', code);
+                File.saveContent('src/generated/${asset.name}.hx', code);
                 Sys.println('  ✓ Saved to src/${asset.name}.hx');
             } catch(e:Dynamic) {
                 Sys.println('  ✗ Error: $e');

@@ -17,6 +17,7 @@ import PillarRepeatShader;
 class Main extends hxd.App {
     static var cliAssetPath:String = null;  // Asset path from CLI argument
     static var screenshotPath:String = null;  // Screenshot path from CLI argument
+    static var scriptPath:String = null;  // Script path from CLI argument
 
     var currentShader:Dynamic;  // Can be any of the 3 shaders - using Dynamic for direct property access
     var bitmap:h2d.Bitmap;
@@ -42,6 +43,9 @@ class Main extends hxd.App {
     // Screenshot mode
     var frameCounter:Int = 0;
     var screenshotTaken:Bool = false;
+
+    // Script runner
+    var scriptRunner:ScriptRunner = null;
 
     override function init() {
         // Initialize all 3 generated shaders (from CLI compilation)
@@ -154,6 +158,15 @@ class Main extends hxd.App {
         }
         updateInspector(currentAssetPath);
         // ===== End VP6.2 =====
+
+        // ===== Script Runner =====
+        if (scriptPath != null) {
+            trace('Script mode: Loading script from: $scriptPath');
+            scriptRunner = new ScriptRunner(this);
+            scriptRunner.loadScriptFile(scriptPath);
+            scriptRunner.start();
+        }
+        // ===== End Script Runner =====
     }
 
     /**
@@ -365,6 +378,19 @@ class Main extends hxd.App {
             s.cameraPos = s3d.camera.pos;
             s.cameraTarget = s3d.camera.target;
             s.aspectRatio = engine.width / engine.height;
+        } else {
+            // Runtime compiled shaders (DynamicShader) - use setVariable method
+            // DynamicShader stores @param fields internally and exposes them via setVariable/getVariable
+            try {
+                var dynShader = cast(shader, hxsl.DynamicShader);
+                dynShader.setVariable("cameraPos", s3d.camera.pos);
+                dynShader.setVariable("cameraTarget", s3d.camera.target);
+                dynShader.setVariable("cameraUp", new h3d.Vector(0, -1, 0));
+                dynShader.setVariable("aspectRatio", engine.width / engine.height);
+                dynShader.setVariable("fov", 1.0);  // ~60 degrees
+            } catch (e:Dynamic) {
+                trace('Warning: Could not update shader camera parameters: $e');
+            }
         }
     }
 
@@ -372,19 +398,22 @@ class Main extends hxd.App {
         // Update current shader parameters each frame
         updateShaderCamera(currentShader);
 
+        // Update script runner
+        if (scriptRunner != null) {
+            scriptRunner.update(dt);
+        }
+
         // Screenshot mode: capture after a few frames (rendering stabilized)
         if (screenshotPath != null && !screenshotTaken) {
             frameCounter++;
-
             if (frameCounter >= 3) {  // Wait 3 frames for rendering to stabilize
                 takeScreenshot(screenshotPath);
                 screenshotTaken = true;
-
                 // Exit after screenshot
                 haxe.Timer.delay(function() {
-                    trace('Screenshot saved, exiting...');
+                    trace('Screenshot complete, exiting...');
                     Sys.exit(0);
-                }, 100);  // Small delay to ensure screenshot is written
+                }, 100);  // Small delay to ensure file is written
             }
         }
     }
@@ -394,21 +423,30 @@ class Main extends hxd.App {
      */
     function takeScreenshot(path:String) {
         try {
-            // Ensure sc/ directory exists
+            // Ensure directory exists
             var dir = haxe.io.Path.directory(path);
             if (dir != "" && !sys.FileSystem.exists(dir)) {
                 sys.FileSystem.createDirectory(dir);
             }
 
-            // Capture screen pixels from engine texture
-            var tex = engine.getCurrentRenderTarget();
-            if (tex == null) tex = h3d.mat.Texture.fromColor(0x000000, 1, 1);  // Fallback
+            // Create a render target texture
+            var renderTexture = new h3d.mat.Texture(engine.width, engine.height, [Target]);
 
-            var pixels = engine.driver.capturePixels(tex, 0, 0);
+            // Render scene to texture
+            engine.pushTarget(renderTexture);
+            engine.clear(engine.backgroundColor);
+            s2d.render(engine);  // Render 2D scene (includes our fullscreen bitmap with shader)
+            engine.popTarget();
+
+            // Capture pixels from the render texture
+            var pixels = renderTexture.capturePixels();
 
             // Save as PNG
             var png = pixels.toPNG();
             sys.io.File.saveBytes(path, png);
+
+            // Clean up
+            renderTexture.dispose();
 
             trace('Screenshot saved: $path (${pixels.width}x${pixels.height})');
         } catch (e:Dynamic) {
@@ -426,6 +464,10 @@ class Main extends hxd.App {
             if (arg == "--screenshot" && i + 1 < args.length) {
                 screenshotPath = args[i + 1];
                 trace('CLI: Screenshot mode - will save to: $screenshotPath');
+                i += 2;
+            } else if (arg == "--script" && i + 1 < args.length) {
+                scriptPath = args[i + 1];
+                trace('CLI: Script mode - will run script: $scriptPath');
                 i += 2;
             } else {
                 // First non-flag argument is asset path

@@ -1,0 +1,29 @@
+# UI Flow Test Script
+# Tests asset loading and captures screenshots
+
+# Load initial sphere
+load_asset assets/jda3d/jda.shape.sphere_basic.json
+wait 500
+screenshot 01_sphere.png
+
+# Switch to rounded box
+load_asset assets/jda3d/jda.shape.rounded_box.json
+wait 500
+screenshot 02_rounded_box.png
+
+# Switch to pillar repeat
+load_asset assets/jda3d/jda.shape.pillar_repeat.json
+wait 500
+screenshot 03_pillar_repeat.png
+
+# Load test assets
+load_asset assets/test/test.box.json
+wait 500
+screenshot 04_test_box.png
+
+load_asset assets/test/test.torus.json
+wait 500
+screenshot 05_test_torus.png
+
+# Done
+exit

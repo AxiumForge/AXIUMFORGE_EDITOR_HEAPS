@@ -610,6 +610,71 @@ return new DynamicShader(shared);
 
 ---
 
+### VP6 Phase 6.4: Screenshot & Runtime Shader Fixes ✅ COMPLETE (2025-11-27)
+
+#### Added
+- **Built-in Screenshot Functionality** (`src/Main.hx`)
+  - CLI parameter `--screenshot <path>` for automated screenshot capture
+  - Render-to-texture approach for full 1280x720 capture
+  - Workflow:
+    1. Create render target texture with screen dimensions
+    2. Push render target, clear, render 2D scene
+    3. Pop render target and capture pixels
+    4. Save as PNG via `hxd.Pixels.toPNG()`
+    5. Auto-exit after screenshot
+  - Example: `hl bin/viewer.hl assets/test/test.box.json --screenshot sc/test_box.png`
+  - **Results**: 1280x720 PNG screenshots (17KB for box, 63KB for torus) ✅
+
+- **Auto-Camera-Positioning** (`src/Main.hx`)
+  - `estimateBoundingRadius(sdfTree)` - Computes conservative bounding sphere from SDF tree
+  - Per-primitive radius estimation: Sphere, Box, Torus, Cylinder, Capsule, Plane
+  - CSG operation handling: Max child radius + 20% margin
+  - Modifier handling: Special case for Repeat (avoid infinite bounds)
+  - `autoCameraPosition(assetPath)` - Smart camera placement at 2.5× bounding radius
+  - Distance clamping: min 2.0, max 20.0
+  - Called on asset load and shader switch
+  - **Results**: All assets properly framed on load ✅
+
+#### Fixed
+- **Screenshot Resolution Bug**
+  - **Problem**: `bitmap.tile.getTexture().capturePixels()` captured 1×1 pixels (70 bytes)
+  - **Root Cause**: Bitmap tile texture was a solid color, not the rendered output
+  - **Solution**: Render-to-texture approach captures full screen rendering
+  - **Verified**: Box (17KB), Torus (63KB) at 1280×720 resolution ✅
+
+- **DynamicShader Camera Parameter Updates**
+  - **Problem**: Runtime-compiled shaders received no camera updates
+  - **Error**: `"hxsl.DynamicShader does not have field cameraPos"`
+  - **Root Cause**: DynamicShader doesn't expose `@param` fields as direct properties
+  - **Attempted Fixes** (Failed):
+    - Direct property access: `shader.cameraPos = value` ❌
+    - `untyped` access: `untyped shader.cameraPos = value` ❌
+    - `Reflect.setField(shader, "cameraPos", value)` ❌
+  - **Solution**: Use `DynamicShader.setVariable(name, value)` method
+    ```haxe
+    var dynShader = cast(shader, hxsl.DynamicShader);
+    dynShader.setVariable("cameraPos", s3d.camera.pos);
+    dynShader.setVariable("cameraTarget", s3d.camera.target);
+    dynShader.setVariable("cameraUp", new h3d.Vector(0, -1, 0));
+    dynShader.setVariable("aspectRatio", engine.width / engine.height);
+    dynShader.setVariable("fov", 1.0);
+    ```
+  - **Verified**: No warnings, all runtime shaders render correctly ✅
+
+- **Material Color Extraction** (`src/loader/RuntimeShaderCompiler.hx`)
+  - **Problem**: All runtime shaders had hardcoded orange color
+  - **Solution**: Extract `base_color` from JDA `mat.default` material
+  - **Results**: Box renders green `[0.3, 0.9, 0.3]`, Torus renders purple `[0.9, 0.3, 0.9]` ✅
+
+#### Technical Notes
+- **Heaps Screenshot Limitation**: No direct backbuffer capture API
+- **Render-to-Texture Pattern**: Standard approach for screenshot/thumbnail generation
+- **DynamicShader Architecture**: Parameters stored in internal arrays, accessed via `setVariable/getVariable`
+- **Parameter Storage**: `values` array for vectors/objects, `floats` array for scalar values
+- **Variable Name Mapping**: `varNames` map for string → index lookup
+
+---
+
 ## Future Phases
 
 ### Phase 2 - JDA Gallery
