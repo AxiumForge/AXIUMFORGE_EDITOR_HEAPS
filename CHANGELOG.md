@@ -438,6 +438,85 @@ function sdf(p: Vec3): Float {
 
 ---
 
+## VP6 Phase 6.3: File Picker & Runtime Shader Compilation 🔥 (In Progress - 2025-11-27)
+
+### Added
+- **CLI Asset Loading**
+  - Command line argument support: `hl viewer.hl path/to/asset.json`
+  - `Sys.args()` parsing in `Main.main()`
+  - Auto-load and switch to CLI-specified asset on startup
+  - AI/automation friendly interface
+
+- **File Browser Popup** (`src/ui/FileBrowser.hx`)
+  - Cross-platform in-app file browser (no OS dependencies)
+  - Directory navigation (up/down folder tree)
+  - `.json` file filtering for JDA/JDW assets
+  - Click-to-select file interface
+  - Semi-transparent overlay design
+  - Integrated with AssetSelector "Browse..." button
+
+- **Test Assets** (`assets/test/`)
+  - `test.box.json` - Simple box primitive with size variants
+  - `test.torus.json` - Torus primitive with major/minor radius
+
+### Fixed
+- **hl.UI.loadFile() macOS Issue**
+  - Problem: Native file dialog (hl.UI) returns null on macOS, no dialog appears
+  - Root cause: Platform-specific permissions/setup required
+  - Solution: Implemented custom Heaps UI file browser instead
+  - Benefit: Cross-platform, no OS dependencies, consistent UX
+
+- **FileBrowser Path Issues**
+  - Problem: Double slashes in file paths (`assets/jda3d//file.json`)
+  - Solution: Path concatenation with `endsWith("/")` checks
+  - Locations: `FileBrowser.hx` `selectFile()` and `navigateTo()`
+
+### Runtime HXSL Shader Compilation (Planned)
+**Discovery**: HXSL supports runtime compilation via `hxsl.DynamicShader`!
+
+**Workflow**:
+```haxe
+// 1. Generate HXSL code from JDA
+var hxslCode = SdfEvaluator.generateHxslCode(jda);
+
+// 2. Parse with hscript
+var parser = new hscript.Parser();
+var expr = parser.parseString(hxslCode);
+var e = new hscript.Macro().convert(expr);
+
+// 3. Compile HXSL AST
+var ast = new hxsl.MacroParser().parseExpr(e);
+var checked = new hxsl.Checker().check("DynamicShader", ast);
+
+// 4. Create runtime shader
+var shared = new hxsl.SharedShader("");
+shared.data = checked;
+@:privateAccess shared.initialize();
+var shader = new hxsl.DynamicShader(shared);
+
+// 5. Use shader!
+bitmap.addShader(shader);
+```
+
+**Benefits**:
+- ✅ Load ANY JDA file from file browser
+- ✅ No pre-compilation required
+- ✅ True dynamic asset loading
+- ✅ Eliminates need for static shader generation
+
+**Requirements**:
+- Add `hscript` dependency (haxelib install hscript)
+- Modify `SdfEvaluator` to generate pure HXSL string (not .hx file wrapper)
+
+**Status**: Implementation in progress
+
+### Sources
+- [HXSL Tools Main.hx](https://github.com/HeapsIO/heaps/blob/master/tools/hxsl/Main.hx)
+- [hxsl.DynamicShader API](https://heaps.io/api/hxsl/DynamicShader.html)
+- [HXSL Cheat Sheet](https://gist.github.com/Yanrishatum/6eb2f6de05fc951599d5afccfab8d0a9)
+
+---
+
 ## Future Phases
 
 ### Phase 2 - JDA Gallery

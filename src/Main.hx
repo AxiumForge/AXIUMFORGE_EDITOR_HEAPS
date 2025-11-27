@@ -7,6 +7,7 @@ import ui.InspectorModel;
 import ui.SceneGraph;
 import loader.Jda3dLoader;
 import loader.JdwLoader;
+import loader.RuntimeShaderCompiler;
 
 // Import generated shaders from CLI compilation
 import SphereBasicShader;
@@ -159,10 +160,18 @@ class Main extends hxd.App {
         var assetPath:String;
         if (assetNameOrPath.indexOf("/") >= 0) {
             // Input is a full path (from browse button)
+            // Compile shader at runtime!
             assetPath = assetNameOrPath;
-            // For browsed files, use default shader (we don't have pre-compiled shaders for all files)
-            currentShader = sphereShader;
             trace('Loading browsed file: $assetPath');
+
+            try {
+                currentShader = RuntimeShaderCompiler.compileFromJda(assetPath);
+                trace('Successfully compiled runtime shader!');
+            } catch (e:Dynamic) {
+                trace('Runtime compilation failed: $e');
+                trace('Falling back to sphereShader');
+                currentShader = sphereShader;
+            }
         } else {
             // Input is a display name (from asset list) - map to pre-compiled shader
             currentShader = switch(assetNameOrPath) {
