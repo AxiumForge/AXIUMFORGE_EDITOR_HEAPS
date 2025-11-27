@@ -14,6 +14,8 @@ import RoundedBoxShader;
 import PillarRepeatShader;
 
 class Main extends hxd.App {
+    static var cliAssetPath:String = null;  // Asset path from CLI argument
+
     var currentShader:Dynamic;  // Can be any of the 3 shaders - using Dynamic for direct property access
     var bitmap:h2d.Bitmap;
     var interactive:h2d.Interactive;
@@ -133,7 +135,15 @@ class Main extends hxd.App {
         inspector.positionRight(engine.width);
 
         // Load initial asset data for inspector
-        currentAssetPath = "assets/jda3d/jda.shape.sphere_basic.json";
+        // Use CLI argument if provided, otherwise default to sphere
+        if (cliAssetPath != null) {
+            trace('CLI: Loading asset from command line: $cliAssetPath');
+            currentAssetPath = cliAssetPath;
+            // Also switch to that shader
+            switchShader(cliAssetPath);
+        } else {
+            currentAssetPath = "assets/jda3d/jda.shape.sphere_basic.json";
+        }
         updateInspector(currentAssetPath);
         // ===== End VP6.2 =====
     }
@@ -141,26 +151,35 @@ class Main extends hxd.App {
     /**
      * Switch shader at runtime (no recompile needed!)
      */
-    function switchShader(assetName:String) {
+    function switchShader(assetNameOrPath:String) {
         // Remove old shader
         bitmap.remove();
 
-        // Select new shader and asset path
+        // Check if input is a file path or display name
         var assetPath:String;
-        currentShader = switch(assetName) {
-            case "Sphere":
-                assetPath = "assets/jda3d/jda.shape.sphere_basic.json";
-                sphereShader;
-            case "Rounded Box":
-                assetPath = "assets/jda3d/jda.shape.rounded_box.json";
-                roundedBoxShader;
-            case "Pillar Repeat":
-                assetPath = "assets/jda3d/jda.shape.pillar_repeat.json";
-                pillarRepeatShader;
-            default:
-                assetPath = "assets/jda3d/jda.shape.sphere_basic.json";
-                sphereShader;
-        };
+        if (assetNameOrPath.indexOf("/") >= 0) {
+            // Input is a full path (from browse button)
+            assetPath = assetNameOrPath;
+            // For browsed files, use default shader (we don't have pre-compiled shaders for all files)
+            currentShader = sphereShader;
+            trace('Loading browsed file: $assetPath');
+        } else {
+            // Input is a display name (from asset list) - map to pre-compiled shader
+            currentShader = switch(assetNameOrPath) {
+                case "Sphere":
+                    assetPath = "assets/jda3d/jda.shape.sphere_basic.json";
+                    sphereShader;
+                case "Rounded Box":
+                    assetPath = "assets/jda3d/jda.shape.rounded_box.json";
+                    roundedBoxShader;
+                case "Pillar Repeat":
+                    assetPath = "assets/jda3d/jda.shape.pillar_repeat.json";
+                    pillarRepeatShader;
+                default:
+                    assetPath = "assets/jda3d/jda.shape.sphere_basic.json";
+                    sphereShader;
+            };
+        }
 
         // Create new bitmap with new shader at index 0 (bottom of z-order)
         bitmap = new h2d.Bitmap(h2d.Tile.fromColor(0x000000, engine.width, engine.height));
@@ -229,6 +248,12 @@ class Main extends hxd.App {
     }
 
     static function main() {
+        // Check for CLI arguments
+        var args = Sys.args();
+        if (args.length > 0) {
+            cliAssetPath = args[0];
+            trace('CLI: Will load asset from: $cliAssetPath');
+        }
         new Main();
     }
 }

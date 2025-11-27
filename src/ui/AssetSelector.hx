@@ -5,6 +5,7 @@ import h2d.Object;
 import h2d.Interactive;
 import h2d.Graphics;
 import sys.FileSystem;
+import hl.UI;
 using StringTools;
 
 /**
@@ -92,7 +93,7 @@ class AssetSelector extends Object {
         // Calculate panel height based on number of assets
         var maxVisibleAssets = 10;  // Show max 10 assets at once
         var visibleAssets = assets.length < maxVisibleAssets ? assets.length : maxVisibleAssets;
-        var panelHeight = 55 + (visibleAssets * 25) + 10;  // Header + assets + padding
+        var panelHeight = 80 + (visibleAssets * 25) + 10;  // Header + browse button + assets + padding
 
         // Panel background
         panelBg = new Graphics(this);
@@ -107,12 +108,15 @@ class AssetSelector extends Object {
         title.x = 10;
         title.y = 10;
 
+        // Browse button
+        createBrowseButton();
+
         // Directory path display
         var dirText = new Text(hxd.res.DefaultFont.get(), this);
         dirText.text = defaultDir;
         dirText.textColor = 0x888888;
         dirText.x = 10;
-        dirText.y = 25;
+        dirText.y = 45;
         dirText.maxWidth = 180;
         dirText.textAlign = Left;
 
@@ -125,7 +129,7 @@ class AssetSelector extends Object {
         }
         currentAssetText.textColor = 0xAAAAAAFF;
         currentAssetText.x = 10;
-        currentAssetText.y = 40;
+        currentAssetText.y = 60;
         currentAssetText.maxWidth = 180;
 
         // Asset count
@@ -136,7 +140,7 @@ class AssetSelector extends Object {
         countText.y = 10;
 
         // Asset buttons
-        var yOffset = 60;
+        var yOffset = 80;
         var displayCount = assets.length < maxVisibleAssets ? assets.length : maxVisibleAssets;
         for (i in 0...displayCount) {
             createAssetButton(assets[i], yOffset);
@@ -144,6 +148,106 @@ class AssetSelector extends Object {
         }
 
         // TODO: Add scroll support if assets.length > maxVisibleAssets
+    }
+
+    function createBrowseButton() {
+        var buttonY = 25;
+        var buttonWidth = 80;
+        var buttonHeight = 18;
+
+        // Button background
+        var btnBg = new Graphics(this);
+        btnBg.beginFill(0x4A90E2);
+        btnBg.drawRect(110, buttonY, buttonWidth, buttonHeight);
+        btnBg.endFill();
+
+        // Button text
+        var btnText = new Text(hxd.res.DefaultFont.get(), this);
+        btnText.text = "Browse...";
+        btnText.textColor = 0xFFFFFF;
+        btnText.x = 120;
+        btnText.y = buttonY + 2;
+
+        // Interactive area
+        var interactive = new Interactive(buttonWidth, buttonHeight, this);
+        interactive.x = 110;
+        interactive.y = buttonY;
+        interactive.onOver = function(e) {
+            btnBg.clear();
+            btnBg.beginFill(0x5AA0F2);
+            btnBg.drawRect(110, buttonY, buttonWidth, buttonHeight);
+            btnBg.endFill();
+        };
+        interactive.onOut = function(e) {
+            btnBg.clear();
+            btnBg.beginFill(0x4A90E2);
+            btnBg.drawRect(110, buttonY, buttonWidth, buttonHeight);
+            btnBg.endFill();
+        };
+        interactive.onClick = function(e) {
+            trace("Browse button clicked!");
+            openFilePicker();
+        };
+    }
+
+    function openFilePicker() {
+        trace("Opening file picker...");
+
+        // Use macOS native file dialog via osascript
+        // This works cross-platform (on non-macOS, falls back to hl.UI)
+        var selectedFile:String = null;
+
+        #if (sys && mac)
+        // macOS: Use osascript for native file dialog
+        try {
+            var process = new sys.io.Process('osascript', [
+                '-e',
+                'POSIX path of (choose file with prompt "Select JDA or JDW Asset" of type {"json"} without invisibles)'
+            ]);
+            var exitCode = process.exitCode();
+            if (exitCode == 0) {
+                selectedFile = StringTools.trim(process.stdout.readAll().toString());
+                trace('File picker selected: $selectedFile');
+            } else {
+                trace("File picker cancelled by user");
+            }
+            process.close();
+        } catch (e:Dynamic) {
+            trace('File picker error: $e');
+        }
+        #else
+        // Fallback: Try hl.UI.loadFile()
+        selectedFile = UI.loadFile({
+            title: "Select JDA or JDW Asset",
+            filters: [
+                {name: "Asset Files", exts: ["json"]},
+                {name: "All Files", exts: ["*"]}
+            ]
+        });
+        #end
+
+        if (selectedFile != null && selectedFile.length > 0) {
+            loadExternalFile(selectedFile);
+        } else {
+            trace("No file selected");
+        }
+    }
+
+    function loadExternalFile(filePath:String) {
+        // Extract filename for display
+        var parts = filePath.split("/");
+        var filename = parts[parts.length - 1];
+        var displayName = formatDisplayName(filename);
+
+        // Update current asset text
+        currentAssetText.text = 'Current: $displayName';
+
+        // Trigger callback with full file path
+        if (onAssetSelected != null) {
+            onAssetSelected(filePath);
+        }
+
+        trace('Loaded external file: $filePath');
     }
 
     function createAssetButton(asset:AssetInfo, y:Float) {
@@ -186,7 +290,7 @@ class AssetSelector extends Object {
         currentAssetText.text = 'Current: ${asset.name}';
 
         if (onAssetSelected != null) {
-            onAssetSelected(asset.name);  // Pass name instead of path
+            onAssetSelected(asset.name);  // Pass display name (for switch statement matching)
         }
     }
 
