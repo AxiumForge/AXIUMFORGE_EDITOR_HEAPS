@@ -61,6 +61,7 @@ Formål: Emneinddelt indeks med target/intent, så AI kan slå viden op før nye
   - 2025-11-25 – HashLink array parsing – Cannot directly cast JSON arrays to Array<Float>, must iterate and cast each element individually
   - 2025-11-25 – h2d.Interactive z-order input handling – Interactive elements must be below UI in z-order to allow UI to receive events first
   - 2025-11-25 – JDA vec3 parameters – Default values can be arrays (e.g., [0.6, 0.6, 0.6]), not just single floats - handle both in Inspector UI
+  - 2025-11-25 – **InspectorModel typedef fix** – Changed ParamInfo.defaultValue and VariantParamInfo.value from String to Dynamic to preserve original JSON types (Float/Array). Tests expected Float but got String when typedef forced string conversion. Solution: Keep raw Dynamic values, let UI handle string conversion for display. Fixed 3 test failures → 205/205 tests passing ✅
 
 ## Brugsmønster
 - Start med relevant kategori (target) før ny søgning.

@@ -13,7 +13,7 @@ import loader.Jda3dTypes.Material;
 typedef ParamInfo = {
     name: String,
     type: String,
-    defaultValue: String,  // Display as string (can be float or vec3)
+    defaultValue: Dynamic,  // Can be Float or String (for display)
     hasMin: Bool,
     min: Float,
     hasMax: Bool,
@@ -39,7 +39,7 @@ typedef MaterialInfo = {
 // Variant information for display
 typedef VariantParamInfo = {
     name: String,
-    value: String  // Display as string (can be float or vec3)
+    value: Dynamic  // Can be Float or String (for display)
 }
 
 typedef VariantInfo = {
@@ -97,19 +97,12 @@ class InspectorModel {
         for (paramName in doc.paramSchema.keys()) {
             var paramDef = doc.paramSchema.get(paramName);
 
-            // Format default value for display (can be Float or Array<Float>)
-            var defaultStr:String = "";
-            if (Std.isOfType(paramDef.defaultValue, Array)) {
-                var arr:Array<Dynamic> = cast paramDef.defaultValue;
-                defaultStr = "[" + arr.join(", ") + "]";
-            } else {
-                defaultStr = Std.string(paramDef.defaultValue);
-            }
-
+            // Keep default value as-is (Float or Array<Float>)
+            // UI can convert to string for display if needed
             params.push({
                 name: paramName,
                 type: paramDef.type,
-                defaultValue: defaultStr,
+                defaultValue: paramDef.defaultValue,
                 hasMin: paramDef.min != null,
                 min: paramDef.min != null ? paramDef.min : 0.0,
                 hasMax: paramDef.max != null,
@@ -172,18 +165,11 @@ class InspectorModel {
                 for (paramName in variantParams.keys()) {
                     var paramValue: Dynamic = variantParams.get(paramName);
 
-                    // Format value for display (can be Float or Array<Float>)
-                    var valueStr:String = "";
-                    if (Std.isOfType(paramValue, Array)) {
-                        var arr:Array<Dynamic> = cast paramValue;
-                        valueStr = "[" + arr.join(", ") + "]";
-                    } else {
-                        valueStr = Std.string(paramValue);
-                    }
-
+                    // Keep value as-is (Float or Array<Float>)
+                    // UI can convert to string for display if needed
                     paramInfos.push({
                         name: paramName,
-                        value: valueStr
+                        value: paramValue
                     });
                 }
             }

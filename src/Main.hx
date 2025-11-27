@@ -4,7 +4,9 @@ import camera.CameraController;
 import ui.AssetSelector;
 import ui.Inspector;
 import ui.InspectorModel;
+import ui.SceneGraph;
 import loader.Jda3dLoader;
+import loader.JdwLoader;
 
 // Import generated shaders from CLI compilation
 import SphereBasicShader;
